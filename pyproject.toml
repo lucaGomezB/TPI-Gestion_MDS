@@ -1,0 +1,20 @@
+[project]
+name = "activia-trace"
+version = "0.1.0"
+description = "Plataforma de gestión académica y trazabilidad de actividades estudiantiles"
+requires-python = ">=3.13"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "integration: marks tests that require a running PostgreSQL database (via testcontainers)",
+]

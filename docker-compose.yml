@@ -1,0 +1,81 @@
+# =============================================================================
+# docker-compose.yml — activia-trace local development environment
+#
+# Services:
+#   db    — PostgreSQL 16 with healthcheck (source of truth for all data)
+#   app   — FastAPI backend (built from ./backend)
+#   n8n   — Workflow automation (n8n.io)
+# =============================================================================
+
+services:
+  # ── Database ──────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-activia}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-activia}
+      POSTGRES_DB: ${POSTGRES_DB:-activia_trace}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-activia} -d ${POSTGRES_DB:-activia_trace}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+
+  # ── Backend ───────────────────────────────────────────────────────────────
+  app:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+
+  # ── Communication Worker (async email queue processor) ──────────────────
+  communication-worker:
+    build:
+      context: ./backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    command: python run_worker.py
+
+  # ── n8n (Workflow Automation) ─────────────────────────────────────────────
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      N8N_DATABASE_TYPE: postgresdb
+      N8N_DATABASE_HOST: db
+      N8N_DATABASE_PORT: 5432
+      N8N_DATABASE_USER: ${POSTGRES_USER:-activia}
+      N8N_DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-activia}
+      N8N_DATABASE_DATABASE: n8n
+      N8N_HOST: ${N8N_HOST:-localhost}
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  postgres_data:
+  n8n_data:
