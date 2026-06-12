@@ -75,3 +75,57 @@ All guardia queries MUST filter by the authenticated user's tenant_id. No guardi
 #### Scenario: Guardias are isolated by tenant
 - **WHEN** a user from Tenant A queries guardias
 - **THEN** the response SHALL NOT include guardias from Tenant B, even if they share the same materia_id
+
+---
+
+## ADDED Frontend Requirements (C-25)
+
+### Requirement: El sistema SHALL proveer listado de guardias por materia
+
+El sistema DEBE proveer una pagina en `/materias/:id/guardias` que muestre las guardias registradas (GET /api/materias/{id}/guardias). La pagina SHALL incluir:
+
+- Tabla con columnas: Dia, Horario, Estado, Comentarios, Fecha de creacion
+- Filtros: por estado (select), por rango de fechas (desde/hasta)
+- Boton "Nueva guardia" que redirige a `/materias/:id/guardias/nuevo`
+- Paginacion
+
+#### Scenario: Cargar lista de guardias de una materia
+
+- **WHEN** el usuario navega a `/materias/:id/guardias`
+- **THEN** se muestra un indicador de carga
+- **THEN** al cargar, se muestra la tabla paginada de guardias ordenada por fecha de creacion descendente
+
+#### Scenario: Filtrar guardias por estado
+
+- **WHEN** el usuario selecciona un estado en el filtro
+- **THEN** la tabla se actualiza mostrando solo guardias con ese estado
+
+#### Scenario: Sin guardias registradas
+
+- **WHEN** la materia no tiene guardias registradas
+- **THEN** se muestra un EmptyState con mensaje "No hay guardias registradas para esta materia"
+- **THEN** el EmptyState incluye un boton "Registrar primera guardia"
+
+### Requirement: El sistema SHALL proveer una pagina para registrar una nueva guardia
+
+El sistema DEBE proveer una pagina con formulario para registrar una guardia (POST /api/materias/{id}/guardias). El formulario SHALL incluir:
+
+- `asignacion_id`: selector de asignacion/docente (obligatorio)
+- `carrera_id`: selector de carrera (obligatorio)
+- `cohorte_id`: selector de cohorte (obligatorio)
+- `dia`: selector enum (Lunes..Domingo, obligatorio)
+- `horario`: input texto (obligatorio, ej: "14:00-14:45")
+- `comentarios`: textarea (opcional)
+
+#### Scenario: Registrar guardia exitosamente
+
+- **WHEN** el usuario completa todos los campos obligatorios y presiona "Guardar"
+- **THEN** se envia POST /api/materias/{id}/guardias
+- **THEN** al recibir respuesta 201, se redirige a la lista de guardias
+- **THEN** la nueva guardia aparece en la lista con estado "Pendiente"
+
+#### Scenario: Validacion de campos obligatorios en formulario de guardia
+
+- **WHEN** el usuario presiona "Guardar" sin completar campos obligatorios
+- **THEN** se muestran mensajes de error debajo de cada campo invalido
+- **THEN** el formulario no se envia

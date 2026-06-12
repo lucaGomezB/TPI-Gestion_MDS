@@ -47,6 +47,9 @@ La fuente de verdad del dominio vive en `knowledge-base/`. **Leé el archivo rel
 
 ## Skills Disponibles
 
+Cargá la skill correspondiente al contexto ANTES de escribir código.
+Ver detalle completo en [`.agents/SKILLS.md`](.agents/SKILLS.md) — rutas, triggers por skill y referencias compartidas.
+
 | Agente | Rol | Skills que carga |
 |--------|-----|------------------|
 | **Backend Core** | FastAPI / SQLAlchemy / Alembic / modelos / repositorios | `fastapi-templates`, `test-driven-development`, `sdd-apply`, `systematic-debugging` |
@@ -54,7 +57,7 @@ La fuente de verdad del dominio vive en `knowledge-base/`. **Leé el archivo rel
 | **Frontend** | React / TypeScript / TanStack Query / Tailwind | `sdd-apply`, `test-driven-development`, `code-review-excellence` |
 | **Orquestación** | OPSX / SDD / openspec / changes | `sdd-propose`, `sdd-design`, `sdd-spec`, `sdd-tasks`, `sdd-verify`, `sdd-archive`, `openspec-init`, `openspec-onboard` |
 
-Cargá la skill correspondiente al contexto ANTES de escribir código.
+Las skills viven en `.agents/skills/` y estan versionadas en el repositorio.
 
 ---
 

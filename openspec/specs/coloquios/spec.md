@@ -186,3 +186,159 @@ All coloquio data queries MUST filter by the authenticated user's tenant_id. No 
 #### Scenario: Coloquio data is isolated by tenant
 - **WHEN** a user from Tenant A queries coloquios
 - **THEN** the response SHALL NOT include coloquio data from Tenant B, even if they share the same materia_id
+
+---
+
+## ADDED Frontend Requirements (C-25)
+
+### Requirement: El sistema SHALL proveer una pagina de listado de convocatorias de coloquio
+
+El sistema DEBE proveer una pagina en `/coloquios` que muestre las convocatorias de coloquio activas. La pagina SHALL incluir:
+
+- Tabla con columnas: Materia, Titulo, Instancia, Dias disponibles, Convocados, Reservas activas, Cupos libres, Acciones
+- Filtro por materia
+- Boton "Nueva convocatoria" que redirige a `/coloquios/nuevo`
+- Paginacion
+
+#### Scenario: Cargar listado de convocatorias
+
+- **WHEN** el usuario navega a `/coloquios`
+- **THEN** se muestra un indicador de carga
+- **THEN** al cargar, se muestra la tabla con las convocatorias activas
+
+#### Scenario: Sin convocatorias activas
+
+- **WHEN** no hay convocatorias activas
+- **THEN** se muestra un EmptyState con mensaje "No hay convocatorias de coloquio activas"
+- **THEN** el EmptyState incluye un boton "Crear primera convocatoria"
+
+### Requirement: El sistema SHALL proveer una pagina para crear una convocatoria de coloquio
+
+El sistema DEBE proveer una pagina con formulario para crear una convocatoria de coloquio (POST /api/materias/{id}/coloquios). El formulario SHALL incluir:
+
+- `materia_id`: selector/autocomplete de materia (obligatorio)
+- `titulo`: texto (obligatorio, max 200 chars)
+- `dias`: lista dinamica de dias con fecha y cupos. Cada entrada incluye:
+  - `fecha`: date picker (obligatorio)
+  - `cupos`: input number (obligatorio, >= 1)
+- Boton "Agregar dia" para anadir filas a la lista de dias
+- Boton "Eliminar" por fila de dia
+
+#### Scenario: Crear convocatoria exitosamente
+
+- **WHEN** el usuario completa materia, titulo y al menos un dia con cupos
+- **THEN** se envia POST /api/materias/{id}/coloquios
+- **THEN** al recibir respuesta 201, se redirige al listado de convocatorias
+
+#### Scenario: Agregar y eliminar dias en el formulario
+
+- **WHEN** el usuario presiona "Agregar dia"
+- **THEN** una nueva fila con date picker y campo de cupos se anade al formulario
+- **WHEN** el usuario presiona "Eliminar" en una fila
+- **THEN** esa fila se elimina del formulario
+
+#### Scenario: Validar al menos un dia
+
+- **WHEN** el usuario presiona "Guardar" sin agregar ningun dia
+- **THEN** se muestra un mensaje de error: "Debe agregar al menos un dia disponible"
+
+### Requirement: El sistema SHALL proveer acciones sobre convocatorias individuales
+
+Cada convocatoria en el listado SHALL tener acciones disponibles:
+
+- "Ver agenda" -> `/coloquios/:id/agenda`
+- "Resultados" -> `/coloquios/:id/resultados`
+- (solo ADMIN) "Cerrar convocatoria" -> cambia `activa` a false
+
+#### Scenario: Cerrar convocatoria
+
+- **WHEN** el usuario ADMIN presiona "Cerrar convocatoria"
+- **THEN** se muestra un dialogo de confirmacion
+- **THEN** al confirmar, se envia la peticion para desactivar la convocatoria
+- **THEN** la convocatoria desaparece del listado de activas
+
+### Requirement: El sistema SHALL proveer una pagina de agenda de reservas de coloquio
+
+El sistema DEBE proveer una pagina en `/coloquios/:id/agenda` que muestre la agenda consolidada de una convocatoria (GET /api/coloquios/{id}/agenda). La pagina SHALL incluir:
+
+- Cabecera con datos de la convocatoria: materia, titulo, estado
+- Lista de dias agrupados, cada dia muestra:
+  - Fecha, cupos totales, reservados, cupos libres
+  - Tabla de reservas: Alumno, Confirmada (si/no), Acciones
+- Los dias se muestran ordenados por fecha ascendente
+
+#### Scenario: Cargar agenda de convocatoria
+
+- **WHEN** el usuario navega a `/coloquios/:id/agenda`
+- **THEN** se muestra un indicador de carga
+- **THEN** al cargar, se muestran los dias con sus reservas agrupadas
+
+#### Scenario: Agenda sin reservas
+
+- **WHEN** la convocatoria no tiene reservas
+- **THEN** se muestra un EmptyState por dia indicando "Sin reservas para esta fecha"
+
+#### Scenario: Convocatoria no encontrada
+
+- **WHEN** el id de la convocatoria no existe (respuesta 404)
+- **THEN** se muestra un ErrorDisplay con mensaje "Convocatoria no encontrada"
+
+### Requirement: El sistema SHALL proveer una pagina de resultados de coloquio
+
+El sistema DEBE proveer una pagina en `/coloquios/:id/resultados` para registrar y consultar resultados de coloquio (POST /api/coloquios/{id}/resultados). La pagina SHALL incluir:
+
+- Cabecera con datos de la convocatoria
+- Tabla de alumnos convocados con columnas: Alumno, Nota, Aprobado, Acciones
+- Boton "Registrar resultado" por fila (si no tiene resultado)
+- Formulario inline o modal para ingresar nota y estado de aprobacion
+- Los resultados ya registrados se muestran como solo lectura
+
+#### Scenario: Cargar pagina de resultados
+
+- **WHEN** el usuario navega a `/coloquios/:id/resultados`
+- **THEN** se muestra un indicador de carga
+- **THEN** al cargar, se muestran los alumnos con sus resultados (si existen)
+
+#### Scenario: Registrar resultado de alumno
+
+- **WHEN** el usuario presiona "Registrar resultado" en una fila sin resultado
+- **THEN** se abre un modal o formulario inline con campos: nota (number), aprobado (checkbox/toggle)
+- **WHEN** el usuario completa y confirma
+- **THEN** se envia POST /api/coloquios/{id}/resultados
+- **THEN** al recibir respuesta 201, la fila se actualiza mostrando el resultado como solo lectura
+
+#### Scenario: Error al registrar resultado duplicado
+
+- **WHEN** el servidor responde 409 (resultado ya existe para ese alumno)
+- **THEN** se muestra un mensaje de error informando que el alumno ya tiene resultado registrado
+- **THEN** la pagina recarga los datos para reflejar el estado actual
+
+### Requirement: El sistema SHALL proveer un panel de metricas globales de coloquios
+
+El sistema DEBE proveer una pagina en `/admin/coloquios` que muestre las metricas globales de coloquios del tenant (GET /api/admin/coloquios/metricas). La pagina SHALL incluir:
+
+- Tarjetas de resumen (KPIs) con:
+  - Total de convocatorias activas
+  - Total de alumnos importados
+  - Total de reservas activas
+  - Total de resultados registrados
+- Lista de convocatorias activas con enlaces rapidos a agenda y resultados
+- Acceso al listado completo de convocatorias
+
+#### Scenario: Cargar panel de metricas
+
+- **WHEN** el usuario COORDINADOR o ADMIN navega a `/admin/coloquios`
+- **THEN** se muestra un indicador de carga
+- **THEN** al cargar, se muestran las 4 tarjetas KPI con valores numericos
+- **THEN** cada tarjeta incluye una etiqueta descriptiva y el valor
+
+#### Scenario: Sin datos de coloquios
+
+- **WHEN** no hay convocatorias ni datos de coloquios en el tenant
+- **THEN** las tarjetas KPI muestran valor 0
+- **THEN** se muestra un mensaje informativo "No hay datos de coloquios para mostrar"
+
+#### Scenario: Error al cargar metricas
+
+- **WHEN** el servidor responde con error
+- **THEN** se muestra un ErrorDisplay con opcion de reintentar

@@ -2,9 +2,10 @@
 # docker-compose.yml — activia-trace local development environment
 #
 # Services:
-#   db    — PostgreSQL 16 with healthcheck (source of truth for all data)
-#   app   — FastAPI backend (built from ./backend)
-#   n8n   — Workflow automation (n8n.io)
+#   db       — PostgreSQL 16 with healthcheck (source of truth for all data)
+#   app      — FastAPI backend (built from ./backend)
+#   frontend — React SPA served by Nginx (built from ./frontend)
+#   n8n      — Workflow automation (n8n.io)
 # =============================================================================
 
 services:
@@ -53,6 +54,16 @@ services:
     env_file:
       - .env
     command: python run_worker.py
+
+  # ── Frontend ──────────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
 
   # ── n8n (Workflow Automation) ─────────────────────────────────────────────
   n8n:

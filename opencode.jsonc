@@ -1,0 +1,12 @@
+{
+  // Project-level override for Engram: use project-specific data directory
+  "mcp": {
+    "engram": {
+      "command": ["C:\\Users\\Admin\\AppData\\Local\\engram\\bin\\engram.exe", "mcp", "--tools=agent"],
+      "type": "local",
+      "environment": {
+        "ENGRAM_DATA_DIR": "C:\\notas\\2026\\Trabajo Final\\otro-proyecto-integrador-SDD\\repo\\TPI-Gestion_MDS\\.engram"
+      }
+    }
+  }
+}

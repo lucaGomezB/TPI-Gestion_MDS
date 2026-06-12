@@ -598,7 +598,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)      │ Agen
 ---
 
 ### [C-22] `frontend-materias`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[ ]` propuesto
 - **Scope**: Dashboard del profesor con vista de materias, calificaciones, atrasados y ranking
   - Página "Mi Semana": KPIs por materia (atrasados, sin corregir, próximos parciales)
   - Vista detallada de materia: importar calificaciones, umbral configurable
@@ -637,7 +637,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)      │ Agen
 ---
 
 ### [C-24] `frontend-comunicaciones`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` archivado
 - **Scope**: Cola de comunicaciones, avisos y mensajería interna
   - Vista previa de mail antes de envío (F3.1)
   - Envío masivo con tracking de estado (F3.2)
@@ -654,7 +654,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)      │ Agen
 ---
 
 ### [C-25] `frontend-encuentros`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` archivado
 - **Scope**: Encuentros, guardias y coloquios
   - Crear slot recurrente / encuentro único (F6.1, F6.2)
   - Editar instancia de encuentro (F6.3)
@@ -689,8 +689,24 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)      │ Agen
 
 ---
 
+### [C-28] `frontend-calendario-evaluaciones`
+- **Estado**: `[ ]` propuesto
+- **Scope**: Gestion de fechas de evaluaciones
+  - ABM de fechas de parciales, TPs y coloquios por materia y cohorte (F5.4, HU-24)
+  - Vista tabular de evaluaciones con filtros
+  - Vista calendario visual de evaluaciones
+  - Generacion de snippet embebible para LMS (Moodle)
+  - Estados: loading, error, empty
+- **Dependencies**: C-04, C-21, C-23
+- **Governance**: MEDIO
+- **Leer antes**:
+  - `knowledge-base/06_funcionalidades.md` \u00a7F5.4
+  - `knowledge-base/11_historias_de_usuario.md` HU-24
+
+---
+
 ### [C-27] `frontend-auditoria`
-- **Estado**: `[ ]` pending
+- **Estado**: `[x]` archivado
 - **Scope**: Panel de auditoría y monitoreo
   - Panel de interacciones con gráficos (acciones/día, F9.1)
   - Log de auditoría con búsqueda full-text (F9.2)

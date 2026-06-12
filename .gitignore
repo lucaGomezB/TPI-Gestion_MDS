@@ -1,33 +1,60 @@
-# Python
+# ── Python ──────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
+*.pyo
 *.egg-info/
+dist/
+build/
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.*
+*.cover
+*.log
+
+# ── Virtual environments ──────────────────────────────────────────────
 .venv/
 venv/
-*.egg
+env/
+ENV/
 
-# Node
+# ── Node / Frontend ──────────────────────────────────────────────────
 node_modules/
-dist/
-.next/
+frontend/dist/
+frontend/build/
 *.tsbuildinfo
+.next/
 
-# IDE
+# ── IDE ────────────────────────────────────────────────────────────────
 .vscode/
 .idea/
 *.swp
 *.swo
-
-# OS
+*~
 .DS_Store
-Thumbs.db
 
-# Env
+# ── Environment ────────────────────────────────────────────────────────
 .env
 .env.local
+.env.production
 
-# Docker
-docker-data/
+# ── Uploads (local storage) ──────────────────────────────────────────
+backend/uploads/
 
-# Logs
-*.log
+# ── Alembic (versions are tracked, cache is not) ─────────────────────
+backend/alembic/versions/__pycache__/
+
+# ── OpenSpec archive (keep active changes + main specs tracked) ──────
+openspec/changes/archive/
+
+# ── Agent Skill Registry (auto-generated) ────────────────────────────
+.atl/
+
+# ── OS ────────────────────────────────────────────────────────────────
+Thumbs.db
+Desktop.ini
+
+# Engram project memory
+.engram/
+
