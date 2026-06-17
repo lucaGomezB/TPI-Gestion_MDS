@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createSlotSchema, createUnicoSchema, type CreateSlotFormData, type CreateUnicoFormData } from '../types/schemas';
 
@@ -25,6 +25,9 @@ function EncuentroForm({ modo, onModoChange, onSubmit, isSubmitting, materiasOpt
   });
 
   const diaSemanaOptions = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+  const slotErrors = modo === 'recurrente' ? (errors as FieldErrors<CreateSlotFormData>) : undefined;
+  const unicoErrors = modo === 'unico' ? (errors as FieldErrors<CreateUnicoFormData>) : undefined;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-lg">
@@ -105,7 +108,7 @@ function EncuentroForm({ modo, onModoChange, onSubmit, isSubmitting, materiasOpt
                 <option key={d} value={d}>{d}</option>
               ))}
             </select>
-            {errors.dia_semana && <p className="text-sm text-red-600 mt-1">{errors.dia_semana.message}</p>}
+            {slotErrors?.dia_semana && <p className="text-sm text-red-600 mt-1">{slotErrors.dia_semana.message}</p>}
           </div>
 
           <div>
@@ -115,7 +118,7 @@ function EncuentroForm({ modo, onModoChange, onSubmit, isSubmitting, materiasOpt
               {...register('fecha_inicio')}
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
             />
-            {errors.fecha_inicio && <p className="text-sm text-red-600 mt-1">{errors.fecha_inicio.message}</p>}
+            {slotErrors?.fecha_inicio && <p className="text-sm text-red-600 mt-1">{slotErrors.fecha_inicio.message}</p>}
           </div>
 
           <div>
@@ -127,7 +130,7 @@ function EncuentroForm({ modo, onModoChange, onSubmit, isSubmitting, materiasOpt
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
               placeholder="0 = ilimitado"
             />
-            {errors.cant_semanas && <p className="text-sm text-red-600 mt-1">{errors.cant_semanas.message}</p>}
+            {slotErrors?.cant_semanas && <p className="text-sm text-red-600 mt-1">{slotErrors.cant_semanas.message}</p>}
           </div>
         </>
       )}
@@ -140,7 +143,7 @@ function EncuentroForm({ modo, onModoChange, onSubmit, isSubmitting, materiasOpt
             {...register('fecha')}
             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
-          {errors.fecha && <p className="text-sm text-red-600 mt-1">{errors.fecha.message}</p>}
+          {unicoErrors?.fecha && <p className="text-sm text-red-600 mt-1">{unicoErrors.fecha.message}</p>}
         </div>
       )}
 

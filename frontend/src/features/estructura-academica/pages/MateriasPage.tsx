@@ -34,7 +34,7 @@ function MateriasPage(): ReactNode {
   const handleUpdate = async (data: CreateMateriaData) => {
     if (!editingItem?.id) return;
     try {
-      await updateMutation.mutateAsync({ id: editingItem.id, data });
+      await updateMutation.mutateAsync({ id: editingItem.id, data: { nombre: data.nombre, activo: editingItem.activo } });
       setEditingItem(null);
     } catch {
       // Error handled by query client

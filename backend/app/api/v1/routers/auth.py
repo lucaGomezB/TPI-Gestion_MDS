@@ -50,7 +50,6 @@ async def login(
     request: Request,
     body: LoginRequest,
     db: Annotated[AsyncSession, Depends(get_db)],
-    _: Annotated[None, Depends(check_login_rate_limit)],
 ) -> TokenResponse | TwoFactorRequired:
     """Authenticate with email and password.
 
@@ -59,6 +58,9 @@ async def login(
 
     Rate-limited: 5 attempts per 60 seconds per IP+email.
     """
+    # Rate limit check
+    client_ip = request.client.host if request.client else "unknown"
+    check_login_rate_limit(body.email, client_ip)
     # In MVP, tenant_id is resolved from JWT or subdomain. For login,
     # there is no JWT yet, so we use a default approach. The frontend
     # would typically send a tenant hint; for now we query by tenant
@@ -86,7 +88,7 @@ async def login(
                 tenant_id=tenant.id,
             )
             # Reset rate limiter on successful login
-            reset_login_attempts(request, body.email)
+            reset_login_attempts(body.email, client_ip)
 
             if isinstance(result_auth, TwoFactorRequired):
                 return JSONResponse(

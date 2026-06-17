@@ -68,19 +68,18 @@ class RateLimiter:
 _login_limiter = RateLimiter()
 
 
-def check_login_rate_limit(request: Request, email: str) -> None:
-    """FastAPI dependency that checks the login rate limit.
+def check_login_rate_limit(email: str, client_ip: str) -> None:
+    """Check if a login attempt is allowed for the given email + IP.
 
     Args:
-        request: The incoming HTTP request (used to extract client IP).
-        email: The email address being used for login (used for hashing).
+        email: The email address being used for login.
+        client_ip: The client's IP address.
 
     Raises:
         HTTPException(429): If the rate limit is exceeded.
     """
     import hashlib
 
-    client_ip = request.client.host if request.client else "unknown"
     email_hash = hashlib.sha256(email.lower().encode("utf-8")).hexdigest()
     key = f"{client_ip}:{email_hash}"
 
@@ -91,16 +90,15 @@ def check_login_rate_limit(request: Request, email: str) -> None:
         )
 
 
-def reset_login_attempts(request: Request, email: str) -> None:
+def reset_login_attempts(email: str, client_ip: str) -> None:
     """Reset the login rate counter after a successful login.
 
     Args:
-        request: The incoming HTTP request (used to extract client IP).
         email: The email address that just logged in successfully.
+        client_ip: The client's IP address.
     """
     import hashlib
 
-    client_ip = request.client.host if request.client else "unknown"
     email_hash = hashlib.sha256(email.lower().encode("utf-8")).hexdigest()
     key = f"{client_ip}:{email_hash}"
     _login_limiter.reset(key)

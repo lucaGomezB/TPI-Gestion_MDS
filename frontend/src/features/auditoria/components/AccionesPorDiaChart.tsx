@@ -109,7 +109,8 @@ function AccionesPorDiaChart({
                 allowDecimals={false}
               />
               <Tooltip
-                labelFormatter={(val: string) => {
+                labelFormatter={(val: unknown) => {
+                  if (typeof val !== 'string') return String(val ?? '');
                   const d = new Date(val);
                   return d.toLocaleDateString('es-AR', {
                     day: 'numeric',
@@ -117,7 +118,7 @@ function AccionesPorDiaChart({
                     year: 'numeric',
                   });
                 }}
-                formatter={(value: number) => [value, 'Acciones']}
+                formatter={(value: unknown) => [Number(value), 'Acciones']}
               />
               <Bar
                 dataKey="total"

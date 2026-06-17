@@ -4,7 +4,6 @@ import Loading from '@/shared/components/Loading';
 import ErrorDisplay from '@/shared/components/ErrorDisplay';
 import EmptyState from '@/shared/components/EmptyState';
 import { useMisEquipos } from '../hooks/useMisEquipos';
-import type { MisEquiposItem } from '../types/asignaciones';
 
 const ESTADOS = ['Todos', 'Vigente', 'Pendiente', 'Vencida'] as const;
 
