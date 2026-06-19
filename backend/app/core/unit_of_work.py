@@ -15,6 +15,7 @@ from app.repositories.academic_structure import (
     ProgramaMateriaRepository,
 )
 from app.repositories.acknowledgment_aviso import AcknowledgmentRepository
+from app.repositories.admin_usuarios import AdminUsuariosRepository
 from app.repositories.atrasados_ranking import AtrasadosRankingRepository
 from app.repositories.audit_repository import AuditRepository
 from app.repositories.auth_repository import AuthRepository
@@ -28,6 +29,7 @@ from app.repositories.coloquios import (
 )
 from app.repositories.communication import ComunicacionRepository, LoteRepository
 from app.repositories.encuentros import InstanciaEncuentroRepository, SlotEncuentroRepository
+from app.repositories.evaluaciones import EvaluacionRepository
 from app.repositories.factura import FacturaRepository
 from app.repositories.grilla_salarial import (
     GrupoMateriaRepository,
@@ -153,8 +155,16 @@ class UnitOfWork:
         return self._get("guardia", GuardiaRepository)  # type: ignore[return-value]
 
     @property
+    def evaluacion(self) -> EvaluacionRepository:
+        return self._get("evaluacion", EvaluacionRepository)  # type: ignore[return-value]
+
+    @property
     def asignacion(self) -> AsignacionRepository:
         return self._get("asignacion", AsignacionRepository)  # type: ignore[return-value]
+
+    @property
+    def admin_usuarios(self) -> AdminUsuariosRepository:
+        return self._get("admin_usuarios", AdminUsuariosRepository)  # type: ignore[return-value]
 
     @property
     def aviso(self) -> AvisoRepository:

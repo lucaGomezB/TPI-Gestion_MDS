@@ -28,8 +28,8 @@ function MensajeInbox({ hilos, isLoading, isError, onRetry }: MensajeInboxProps)
     <div className="divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
       {hilos.map((hilo) => (
         <Link
-          key={hilo.id}
-          to={`/mensajeria/${hilo.id}`}
+          key={hilo.hilo_id}
+          to={`/mensajeria/${hilo.hilo_id}`}
           className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
         >
           <div className="flex-1 min-w-0">
@@ -48,12 +48,12 @@ function MensajeInbox({ hilos, isLoading, isError, onRetry }: MensajeInboxProps)
               )}
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              {hilo.participantes.map((p) => `${p.nombre} ${p.apellido}`).join(', ')}
+              {hilo.remitente_nombre}
             </p>
           </div>
           <div className="text-right ml-4 shrink-0">
             <p className="text-xs text-gray-400">
-              {new Date(hilo.ultimo_mensaje_en).toLocaleDateString('es-AR')}
+              {new Date(hilo.ultima_fecha).toLocaleDateString('es-AR')}
             </p>
             <p className="text-xs text-gray-400 truncate max-w-[200px] mt-1">
               {hilo.ultimo_mensaje}

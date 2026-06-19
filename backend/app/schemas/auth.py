@@ -37,14 +37,28 @@ class LoginTotpRequest(BaseModel):
     totp_code: str = Field(..., min_length=6, max_length=6)
 
 
+class UserInfo(BaseModel):
+    """Public user information returned with auth tokens."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    email: str
+    nombre: str
+    apellidos: str
+    rol: str
+    tenant_id: str
+
+
 class TokenResponse(BaseModel):
-    """JWT access token and opaque refresh token."""
+    """JWT access token, opaque refresh token, and user info."""
 
     model_config = ConfigDict(extra="forbid")
 
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
+    user: UserInfo
 
 
 class TwoFactorRequired(BaseModel):

@@ -16,6 +16,7 @@ from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import get_current_user, get_db, require_permission
@@ -32,7 +33,7 @@ router = APIRouter(tags=["admin", "reportes"])
 
 
 @router.get(
-    "/api/admin/monitor/actividades",
+    "/api/admin/materias/monitor-general",
     response_model=MonitorGeneralResponse,
 )
 async def monitor_actividades(
@@ -100,3 +101,67 @@ async def monitor_actividades(
         )
 
         return result
+
+
+@router.get(
+    "/api/admin/materias/monitor-general/export",
+)
+async def export_monitor_general(
+    _: Annotated[None, Depends(require_permission("reportes:monitor_general"))],
+    current_user: Annotated[dict, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    materia_id: Annotated[
+        str | None, Query(description="Filter by materia ID")
+    ] = None,
+    regional: Annotated[
+        str | None, Query(description="Filter by regional")
+    ] = None,
+    comision: Annotated[
+        str | None, Query(description="Filter by comision")
+    ] = None,
+    busqueda: Annotated[
+        str | None, Query(description="Search by nombre or apellidos")
+    ] = None,
+    status: Annotated[
+        str | None, Query(description="Filter: todos, con_atrasados, sin_datos")
+    ] = None,
+) -> StreamingResponse:
+    """Export monitor general data as CSV.
+
+    Returns a StreamingResponse with Content-Type text/csv for browser download.
+    """
+    import csv
+    import io
+    from fastapi.responses import StreamingResponse
+
+    tenant_id = current_user.get("tenant_id", "")
+
+    async with UnitOfWork(db, tenant_id) as uow:
+        service = ReportesMonitorService(uow)
+        result = await service.get_monitor_general(
+            materia_id=materia_id,
+            regional=regional,
+            comision=comision,
+            busqueda=busqueda,
+            estado_actividad=status,
+        )
+
+        output = io.StringIO()
+        writer = csv.DictWriter(
+            output,
+            fieldnames=[
+                "materia_id", "materia_nombre", "cohorte", "comision",
+                "total_alumnos", "total_actividades", "promedio_general",
+                "aprobados", "reprobados", "atrasados_count", "pendientes_count",
+            ],
+        )
+        writer.writeheader()
+        for item in result.items:
+            writer.writerow(item.model_dump())
+
+        output.seek(0)
+        return StreamingResponse(
+            iter([output.getvalue()]),
+            media_type="text/csv",
+            headers={"Content-Disposition": "attachment; filename=monitor-general.csv"},
+        )

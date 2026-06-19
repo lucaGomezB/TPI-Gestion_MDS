@@ -70,39 +70,39 @@ GATE 3: C-03 ✅
   → C-08 moodle-integration             [Agente B — Backend Aux] ✅
   → C-17 auditoria-log                  [Agente C — Cross-cutting] ✅
 
-GATE 4: C-04 ✓
-  → C-05 roles-asignaciones             [Agente A]
+GATE 4: C-04 ✅
+  → C-05 roles-asignaciones             [Agente A] ✅
 
-GATE 5: C-05 ✓                          ← SEGUNDO GRAN FORK (5 paralelos)
-  → C-06 padron-alumnos                 [Agente A]
-  → C-11 cola-comunicaciones            [Agente B]
-  → C-14 encuentros-guardias            [Agente C]
-  → C-16 tareas-internas                [Agente C — si C-14 ✓]
-  → C-18 grilla-salarial                [Agente B — si C-11 ✓]
+GATE 5: C-05 ✅                          ← SEGUNDO GRAN FORK (5 paralelos)
+  → C-06 padron-alumnos                 [Agente A] ✅
+  → C-11 cola-comunicaciones            [Agente B] ✅
+  → C-14 encuentros-guardias            [Agente C] ✅
+  → C-16 tareas-internas                [Agente C] ✅
+  → C-18 grilla-salarial                [Agente B] ✅
 
-GATE 6: C-06 ✓
-  → C-07 calificaciones                 [Agente A]
+GATE 6: C-06 ✅
+  → C-07 calificaciones                 [Agente A] ✅
 
-GATE 7: C-07 ✓
-  → C-09 atrasados-ranking              [Agente A]
-  → C-10 reportes-calificaciones        [Agente A — si C-09 ✓]
+GATE 7: C-07 ✅
+  → C-09 atrasados-ranking              [Agente A] ✅
+  → C-10 reportes-calificaciones        [Agente A] ✅
 
-GATE 8: C-11 + C-06 ✓
-  → C-12 avisos-tablon                  [Agente B]
-  → C-13 mensajeria-interna             [Agente B — si C-12 ✓]
+GATE 8: C-11 + C-06 ✅
+  → C-12 avisos-tablon                  [Agente B] ✅
+  → C-13 mensajeria-interna             [Agente B] ✅
 
 GATE 9: C-14 ✅
   → C-15 coloquios                      [Agente C] ✅
 
-GATE 10: C-18 ✓
-  → C-19 liquidaciones                  [Agente B]
-  → C-20 facturacion-docentes           [Agente B — si C-19 ✓]
+GATE 10: C-18 ✅
+  → C-19 liquidaciones                  [Agente B] ✅
+  → C-20 facturacion-docentes           [Agente B] ✅
 ```
 
 ### Camino crítico (12 changes — mínimo irreducible)
 
 ```
-~~C-01~~ → C-02 → C-03 → C-04 → C-05 → C-06 → C-07 → C-09 → C-10 → C-11 → C-12 → C-19
+~~C-01~~ → ~~C-02~~ → ~~C-03~~ → ~~C-04~~ → ~~C-05~~ → ~~C-06~~ → ~~C-07~~ → ~~C-09~~ → ~~C-10~~ → ~~C-11~~ → ~~C-12~~ → ~~C-19~~
 ```
 
 ### Plan óptimo con 3 agentes
@@ -111,15 +111,15 @@ GATE 10: C-18 ✓
 Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)      │ Agente C (Frontend+Cross)
 ─────┼────────────────────────────────┼─────────────────────────────┼────────────────────────────
   1  │ C-01 foundation-setup ✅       │         —                   │         —
-  2  │ C-02 core-models               │         —                   │         —
-  3  │ C-03 auth-rbac                 │         —                   │         —
-  4  │ C-04 carrera-cohorte-materia   │ C-08 moodle-integration     │ C-17 auditoria-log
-  5  │ C-05 roles-asignaciones        │         —                   │         —
-  6  │ C-06 padron-alumnos            │ C-11 cola-comunicaciones    │ C-14 encuentros-guardias
-  7  │ C-07 calificaciones            │ C-18 grilla-salarial        │ C-16 tareas-internas
-  8  │ C-09 atrasados-ranking         │ C-12 avisos-tablon          │ C-15 coloquios ✅
-  9  │ C-10 reportes-calificaciones   │ C-13 mensajeria-interna     │         —
- 10  │         —                      │ C-19 liquidaciones          │         —
+  2  │ C-02 core-models ✅            │         —                   │         —
+  3  │ C-03 auth-rbac ✅              │         —                   │         —
+  4  │ C-04 carrera-cohorte-materia ✅│ C-08 moodle-integration ✅  │ C-17 auditoria-log ✅
+  5  │ C-05 roles-asignaciones ✅     │         —                   │         —
+  6  │ C-06 padron-alumnos ✅         │ C-11 cola-comunicaciones ✅ │ C-14 encuentros-guardias ✅
+  7  │ C-07 calificaciones ✅         │ C-18 grilla-salarial ✅     │ C-16 tareas-internas ✅
+  8  │ C-09 atrasados-ranking ✅      │ C-12 avisos-tablon ✅       │ C-15 coloquios ✅
+  9  │ C-10 reportes-calificaciones ✅│ C-13 mensajeria-interna ✅  │         —
+  10  │         —                      │ C-19 liquidaciones ✅       │         —
   11  │         —                      │ C-20 facturacion-docentes ✅│         —
 ```
 
@@ -302,7 +302,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)      │ Agen
 ---
 
 ### [C-10] `reportes-calificaciones`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` archivado
 - **Scope**: Reportes avanzados + exportación de notas finales
   - `GET /api/materias/{id}/notas-finales` — notas finales agrupadas por alumno
   - `GET /api/materias/{id}/export/atrasados` — exportar TP sin corregir (RN-07, RN-08)
@@ -575,7 +575,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)      │ Agen
 > Verificar que el change backend correspondiente esté archivado antes de proponer el frontend.
 
 ### [C-21] `frontend-foundation`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` archivado
 - **Scope**: Foundation del frontend + flujo de autenticación completo
   - Vite + React 18 + TypeScript + Tailwind CSS configurados
   - Cliente Axios centralizado en `shared/services/api.ts` con interceptor JWT/refresh
@@ -598,7 +598,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)      │ Agen
 ---
 
 ### [C-22] `frontend-materias`
-- **Estado**: `[ ]` propuesto
+- **Estado**: `[x]` archivado
 - **Scope**: Dashboard del profesor con vista de materias, calificaciones, atrasados y ranking
   - Página "Mi Semana": KPIs por materia (atrasados, sin corregir, próximos parciales)
   - Vista detallada de materia: importar calificaciones, umbral configurable
@@ -617,7 +617,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)      │ Agen
 ---
 
 ### [C-23] `frontend-equipos`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` archivado
 - **Scope**: Gestión de equipos docentes y estructura académica
   - ABM de carreras, cohortes, materias (F5.1, F5.2, F5.3)
   - ABM de usuarios docentes (F4.1)
@@ -672,7 +672,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)      │ Agen
 ---
 
 ### [C-26] `frontend-liquidaciones`
-- **Estado**: `[ ]` pending
+- **Estado**: `[x]` archivado
 - **Scope**: Grilla salarial, liquidaciones y facturación
   - Administración de grilla salarial (Base + Plus) (F10.4)
   - Vista de liquidaciones del período con desglose (F10.1)
@@ -690,7 +690,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)      │ Agen
 ---
 
 ### [C-28] `frontend-calendario-evaluaciones`
-- **Estado**: `[ ]` propuesto
+- **Estado**: `[x]` archivado
 - **Scope**: Gestion de fechas de evaluaciones
   - ABM de fechas de parciales, TPs y coloquios por materia y cohorte (F5.4, HU-24)
   - Vista tabular de evaluaciones con filtros

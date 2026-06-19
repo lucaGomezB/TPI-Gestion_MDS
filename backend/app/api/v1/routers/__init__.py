@@ -1,4 +1,5 @@
 from app.api.v1.routers.academic_structure import router as academic_structure_router
+from app.api.v1.routers.admin_usuarios import router as admin_usuarios_router
 from app.api.v1.routers.admin_facturas import router as admin_facturas_router
 from app.api.v1.routers.admin_auditoria import router as admin_auditoria_router
 from app.api.v1.routers.admin_moodle import router as admin_moodle_router
@@ -15,6 +16,7 @@ from app.api.v1.routers.coloquios import (
 from app.api.v1.routers.communication import router as communication_router
 from app.api.v1.routers.docente_facturas import router as docente_facturas_router
 from app.api.v1.routers.encuentros import router as encuentros_router
+from app.api.v1.routers.evaluaciones import router as evaluaciones_router
 from app.api.v1.routers.grilla_salarial import router as grilla_salarial_router
 from app.api.v1.routers.liquidaciones import router as liquidaciones_router
 from app.api.v1.routers.mensajeria import router as mensajeria_router
@@ -27,9 +29,11 @@ from app.api.v1.routers.admin_reportes import router as admin_reportes_router
 from app.api.v1.routers.padron import router as padron_router
 from app.api.v1.routers.reportes import router as reportes_router
 from app.api.v1.routers.team_management import router as team_management_router
+from app.api.v1.routers.mis_materias import router as mis_materias_router
 
 __all__ = [
     "academic_structure_router",
+    "admin_usuarios_router",
     "admin_facturas_router",
     "admin_auditoria_router",
     "docente_facturas_router",
@@ -44,6 +48,7 @@ __all__ = [
     "coloquios_router",
     "communication_router",
     "encuentros_router",
+    "evaluaciones_router",
     "grilla_salarial_router",
     "guardias_router",
     "health_router",
@@ -55,4 +60,5 @@ __all__ = [
     "padron_router",
     "reportes_router",
     "team_management_router",
+    "mis_materias_router",
 ]

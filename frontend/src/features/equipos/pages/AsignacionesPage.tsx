@@ -10,7 +10,7 @@ import { useDocentes } from '../hooks/useEquipos';
 import { useCarreras } from '../../estructura-academica/hooks/useCarreras';
 import { useCohortes } from '../../estructura-academica/hooks/useCohortes';
 import { useMaterias } from '../../estructura-academica/hooks/useMaterias';
-import type { AsignacionDisplay, AsignacionFilters, CreateAsignacionData, UpdateAsignacionData } from '../types/asignaciones';
+import type { AsignacionDisplay, AsignacionFilters, CreateAsignacionData } from '../types/asignaciones';
 import { Link } from 'react-router-dom';
 
 function AsignacionesPage(): ReactNode {
@@ -30,16 +30,6 @@ function AsignacionesPage(): ReactNode {
     try {
       await createMutation.mutateAsync(data);
       setShowForm(false);
-    } catch {
-      // Error handled by query client
-    }
-  };
-
-  const handleUpdate = async (data: CreateAsignacionData) => {
-    if (!editingItem?.id) return;
-    try {
-      await updateMutation.mutateAsync({ id: editingItem.id, data: data as UpdateAsignacionData });
-      setEditingItem(null);
     } catch {
       // Error handled by query client
     }

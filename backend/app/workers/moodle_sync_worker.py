@@ -35,7 +35,7 @@ async def run_moodle_sync_worker() -> None:
 
     while True:
         try:
-            _wait_until_sync_hour()
+            await _wait_until_sync_hour()
 
             logger.info("Starting nocturnal Moodle sync cycle")
 
@@ -56,25 +56,17 @@ async def run_moodle_sync_worker() -> None:
             await asyncio.sleep(60)
 
 
-def _wait_until_sync_hour() -> None:
-    """Synchronously calculate and sleep until the next configured sync hour.
-
-    This is a blocking sleep to align with wall-clock time.
-    For production, use a proper scheduler instead.
-    """
-    import time
-
+async def _wait_until_sync_hour() -> None:
+    """Calculate and sleep (async) until the next configured sync hour."""
     settings = get_settings()
     sync_hour = settings.moodle_sync_hour
     now = datetime.now(timezone.utc)
     current_hour = now.hour
 
     if current_hour < sync_hour:
-        # Same day, future hour
         target = now.replace(hour=sync_hour, minute=0, second=0, microsecond=0)
         seconds = (target - now).total_seconds()
     else:
-        # Next day
         from datetime import timedelta
 
         tomorrow = now + timedelta(days=1)
@@ -87,7 +79,7 @@ def _wait_until_sync_hour() -> None:
             seconds / 3600,
             sync_hour,
         )
-        time.sleep(seconds)
+        await asyncio.sleep(seconds)
 
 
 async def _sync_all_tenants(db: AsyncSession) -> None:

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import * as authService from '../services/authService';
 import type { User, LoginRequest } from '../types';
 
@@ -41,7 +41,11 @@ function AuthProvider({ children }: AuthProviderProps) {
   });
 
   const isAuthenticated = !!user && hasStoredToken();
-  const [isLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
 
   const login = useCallback(async (data: LoginRequest): Promise<User> => {
     const response = await authService.login(data);

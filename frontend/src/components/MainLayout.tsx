@@ -9,10 +9,10 @@ function MainLayout() {
 
   const handleToggle = () => setIsCollapsed((prev) => !prev);
 
-  const fullName = user ? `${user.nombre} ${user.apellido}` : '';
+  const fullName = user ? `${user.nombre} ${user.apellidos}` : '';
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-[#F8FAFC]">
       <Sidebar isCollapsed={isCollapsed} onToggle={handleToggle} />
 
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -37,7 +37,7 @@ function MainLayout() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto px-16 lg:px-16 md:px-8 px-4 py-6">
           <Outlet />
         </main>
       </div>

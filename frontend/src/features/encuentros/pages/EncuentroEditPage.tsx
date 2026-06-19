@@ -5,8 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { updateEncuentroSchema, type UpdateEncuentroFormData } from '../types/schemas';
 import { useUpdateEncuentro } from '../hooks/useUpdateEncuentro';
 import PageHeader from '@/shared/components/PageHeader';
-import Loading from '@/shared/components/Loading';
-import ErrorDisplay from '@/shared/components/ErrorDisplay';
 
 const estadoOptions = ['Programado', 'Realizado', 'Cancelado'] as const;
 

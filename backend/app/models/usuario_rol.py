@@ -9,7 +9,7 @@ Unique constraint on ``(usuario_id, rol_id)`` prevents duplicate assignments.
 
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import DateTime, ForeignKey, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -47,6 +47,8 @@ class UsuarioRol(AppModel):
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        default=func.now(),
+        server_default=func.now(),
         nullable=False,
     )
 

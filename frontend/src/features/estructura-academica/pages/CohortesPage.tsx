@@ -7,7 +7,7 @@ import DataTable from '../components/DataTable';
 import CohorteForm from '../components/CohorteForm';
 import { useCarreras } from '../hooks/useCarreras';
 import { useCohortes, useCreateCohorte, useUpdateCohorte } from '../hooks/useCohortes';
-import type { Cohorte, CreateCohorteData, CreateCarreraData } from '../types/estructura';
+import type { Cohorte, CreateCohorteData } from '../types/estructura';
 
 function CohortesPage(): ReactNode {
   const [selectedCarreraId, setSelectedCarreraId] = useState('');
@@ -31,7 +31,7 @@ function CohortesPage(): ReactNode {
   const handleUpdate = async (data: CreateCohorteData) => {
     if (!editingItem?.id) return;
     try {
-      await updateMutation.mutateAsync({ id: editingItem.id, data });
+      await updateMutation.mutateAsync({ id: editingItem.id, data: { ...data, activo: editingItem.activo } });
       setEditingItem(null);
     } catch {
       // Error handled by query client

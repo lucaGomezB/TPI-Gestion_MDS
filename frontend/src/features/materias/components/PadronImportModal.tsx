@@ -53,7 +53,6 @@ function PadronImportModal({ isOpen, onClose, onUpload, onReplace }: PadronImpor
     }
 
     setError(null);
-    setUploading(true);
     setStep('uploading');
 
     try {
@@ -65,8 +64,6 @@ function PadronImportModal({ isOpen, onClose, onUpload, onReplace }: PadronImpor
     } catch {
       setError('Error al procesar el padron. Verifique el formato del archivo.');
       setStep('select');
-    } finally {
-      setUploading(false);
     }
   };
 

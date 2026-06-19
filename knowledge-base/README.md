@@ -29,6 +29,7 @@ El sistema es **multi-tenant**: cada institución educativa opera en un entorno 
 | 09 | [09_decisiones_y_supuestos.md](09_decisiones_y_supuestos.md) | Decisiones de diseño adoptadas y supuestos base del sistema |
 | 10 | [10_preguntas_abiertas.md](10_preguntas_abiertas.md) | Aspectos del dominio pendientes de validación con el responsable de producto |
 | 11 | [11_historias_de_usuario.md](11_historias_de_usuario.md) | Historias de usuario (formato Connextra + criterios de aceptación), cruzadas con funcionalidades y reglas |
+| 12 | [12_diseno_de_sistema.md](12_diseno_de_sistema.md) | Sistema de diseño UI: paleta de colores, tipografía, layout, componentes y patrones de interfaz |
 
 ---
 

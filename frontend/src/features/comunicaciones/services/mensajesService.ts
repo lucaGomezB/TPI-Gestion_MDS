@@ -2,8 +2,8 @@ import api from '@/shared/services/api';
 import type { HiloMensaje, Mensaje, MensajeRequest, ResponderMensajeRequest } from '../types';
 
 export async function getHilosMensajes(): Promise<HiloMensaje[]> {
-  const response = await api.get<HiloMensaje[]>('/mensajes');
-  return response.data;
+  const response = await api.get<{ data: HiloMensaje[] }>('/mensajes');
+  return response.data.data ?? [];
 }
 
 export async function getHiloMensaje(id: string): Promise<Mensaje[]> {

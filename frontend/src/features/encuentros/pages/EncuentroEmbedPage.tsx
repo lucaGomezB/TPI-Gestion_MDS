@@ -2,7 +2,6 @@ import { useState, type ReactNode } from 'react';
 import { useGenerateEmbed } from '../hooks/useGenerateEmbed';
 import SnippetDisplay from '../components/SnippetDisplay';
 import PageHeader from '@/shared/components/PageHeader';
-import Loading from '@/shared/components/Loading';
 import ErrorDisplay from '@/shared/components/ErrorDisplay';
 import EmptyState from '@/shared/components/EmptyState';
 

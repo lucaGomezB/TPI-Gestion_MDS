@@ -108,6 +108,38 @@ async def importar_alumnos(
         return await service.importar_alumnos(materia_id, body)
 
 
+# ── GET /api/coloquios — Global listing ──────────────────────────────────────
+
+
+@router_coloquios.get(
+    "/api/coloquios",
+    status_code=HTTP_200_OK,
+)
+async def list_coloquios_global(
+    current_user: Annotated[dict, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> list[dict]:
+    """List all active coloquios scoped to the current tenant.
+
+    Accessible by any authenticated user with coloquios visibility.
+    """
+    async with UnitOfWork(db, _get_tenant_id(current_user)) as uow:
+        # Use base list() which includes tenant scope via _stmt()
+        coloquios = await uow.evaluacion_coloquio.list_activas()
+        return [
+            {
+                "id": c.id,
+                "materia_id": c.materia_id,
+                "nombre": c.nombre,
+                "fecha_inicio": c.fecha_inicio.isoformat() if c.fecha_inicio else None,
+                "fecha_fin": c.fecha_fin.isoformat() if c.fecha_fin else None,
+                "cupo": c.cupo,
+                "tenant_id": c.tenant_id,
+            }
+            for c in coloquios
+        ]
+
+
 # ── POST /api/coloquios/{evaluacion_id}/reservar — Reservar turno ────────────
 
 

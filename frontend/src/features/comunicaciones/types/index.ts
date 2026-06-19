@@ -96,27 +96,21 @@ export interface AcknowledgmentAviso {
 // ─── Mensajería interna ───
 
 export interface HiloMensaje {
-  id: string;
+  hilo_id: string;
   asunto: string;
-  participantes: Array<{
-    id: string;
-    nombre: string;
-    apellido: string;
-  }>;
   ultimo_mensaje: string;
-  ultimo_mensaje_en: string;
+  ultima_fecha: string;
+  remitente_nombre: string;
   no_leidos: number;
-  created_at: string;
 }
 
 export interface Mensaje {
   id: string;
   hilo_id: string;
-  emisor_id: string;
-  emisor_nombre: string;
-  emisor_apellido: string;
-  receptor_id: string;
-  contenido: string;
+  remitente_id: string;
+  destinatario_id: string;
+  asunto: string;
+  cuerpo: string;
   leido: boolean;
   created_at: string;
 }

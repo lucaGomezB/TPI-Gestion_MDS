@@ -2,7 +2,7 @@ export interface User {
   id: string;
   email: string;
   nombre: string;
-  apellido: string;
+  apellidos: string;
   rol: string;
   tenant_id: string;
 }

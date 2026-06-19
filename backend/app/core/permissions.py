@@ -161,6 +161,12 @@ ROL_PERMISSIONS: dict[str, set[str]] = {
         "usuario:gestionar",
         "auditoria:ver",
         "facturas:gestionar",
+        "facturas:subir",
+        "liquidaciones:configurar-salarios",
+        "grilla_salarial:operar",
+        "liquidaciones:ver",
+        "liquidaciones:calcular",
+        "liquidaciones:cerrar",
         "tenant:configurar",
     },
     "FINANZAS": {

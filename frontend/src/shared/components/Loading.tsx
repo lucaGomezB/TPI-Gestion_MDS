@@ -9,10 +9,10 @@ interface LoadingProps {
 function SkeletonInner() {
   return (
     <div className="space-y-4 animate-pulse" data-testid="skeleton-rows">
-      <div className="h-4 bg-gray-200 rounded w-3/4" />
-      <div className="h-4 bg-gray-200 rounded w-1/2" />
-      <div className="h-4 bg-gray-200 rounded w-5/6" />
-      <div className="h-4 bg-gray-200 rounded w-2/3" />
+      <div className="h-4 bg-[#64748B]/10 rounded w-3/4" />
+      <div className="h-4 bg-[#64748B]/10 rounded w-1/2" />
+      <div className="h-4 bg-[#64748B]/10 rounded w-5/6" />
+      <div className="h-4 bg-[#64748B]/10 rounded w-2/3" />
     </div>
   );
 }
@@ -20,7 +20,7 @@ function SkeletonInner() {
 function LoadingIndicator({ message }: { message?: string }) {
   return (
     <>
-      <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+      <div className="w-10 h-10 border-4 border-[#64748B]/20 border-t-[#0F172A] rounded-full animate-spin" />
       {message && <p className="text-sm text-gray-500">{message}</p>}
     </>
   );

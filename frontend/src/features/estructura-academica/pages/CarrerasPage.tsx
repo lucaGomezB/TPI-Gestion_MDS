@@ -6,7 +6,7 @@ import EmptyState from '@/shared/components/EmptyState';
 import DataTable from '../components/DataTable';
 import CarreraForm from '../components/CarreraForm';
 import { useCarreras, useCreateCarrera, useUpdateCarrera } from '../hooks/useCarreras';
-import type { Carrera, CreateCarreraData, UpdateCarreraData } from '../types/estructura';
+import type { Carrera, CreateCarreraData } from '../types/estructura';
 
 function CarrerasPage(): ReactNode {
   const [showForm, setShowForm] = useState(false);
@@ -28,7 +28,7 @@ function CarrerasPage(): ReactNode {
   const handleUpdate = async (data: CreateCarreraData) => {
     if (!editingItem?.id) return;
     try {
-      await updateMutation.mutateAsync({ id: editingItem.id, data });
+      await updateMutation.mutateAsync({ id: editingItem.id, data: { nombre: data.nombre, activo: editingItem.activo } });
       setEditingItem(null);
     } catch {
       // Error handled by query client

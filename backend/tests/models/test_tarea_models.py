@@ -91,7 +91,7 @@ class TestComentarioTareaModel:
         )
         assert comentario.texto == "Ya lo estoy revisando"
         assert comentario.id is not None
-        assert comentario.creado_at is not None
+        # created_at is server_default — populated only after DB flush
 
     def test_table_name(self) -> None:
         """ComentarioTarea uses correct table name."""

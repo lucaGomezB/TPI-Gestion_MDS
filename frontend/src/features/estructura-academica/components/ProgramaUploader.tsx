@@ -67,7 +67,7 @@ function ProgramaUploader({ materiaId, materiaNombre, carreras, cohortes }: Prog
     }
   };
 
-  const handleDownload = (programaId: string, filename: string) => {
+  const handleDownload = (programaId: string, _filename: string) => {
     window.open(`/api/admin/programas-materia/${programaId}/download`, '_blank');
   };
 

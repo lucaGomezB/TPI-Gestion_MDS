@@ -107,9 +107,9 @@ function App() {
               <Route path="/materias/:id/notas-finales" element={<NotasFinalesPage />} />
               <Route path="/materias/:id/export-atrasados" element={<ExportAtrasadosPage />} />
               <Route path="/materias/:id/seguimiento" element={<SeguimientoPage />} />
-              <Route path="/alumnos" element={<div className="text-center text-gray-500 py-12">Alumnos próximamente</div>} />
-              <Route path="/comisiones" element={<div className="text-center text-gray-500 py-12">Comisiones próximamente</div>} />
-              <Route path="/calificaciones" element={<div className="text-center text-gray-500 py-12">Calificaciones próximamente</div>} />
+              <Route path="/alumnos" element={<div className="text-center text-gray-500 py-12">Gestión de alumnos disponible desde cada materia. Use &quot;Materias&quot; o &quot;Mi Semana&quot; para acceder al padrón y calificaciones.</div>} />
+              <Route path="/comisiones" element={<div className="text-center text-gray-500 py-12">Las comisiones se gestionan dentro de cada materia y asignación docente. Acceda desde &quot;Materias&quot; o &quot;Asignaciones&quot;.</div>} />
+              <Route path="/calificaciones" element={<div className="text-center text-gray-500 py-12">Las calificaciones se acceden desde cada materia. Seleccione una materia en &quot;Materias&quot; o &quot;Mi Semana&quot; para importar, ver y exportar calificaciones.</div>} />
               <Route path="/encuentros" element={<EncuentrosLayout />}>
                 <Route index element={<EncuentrosListPage />} />
                 <Route path="nuevo" element={<EncuentroCreatePage />} />
