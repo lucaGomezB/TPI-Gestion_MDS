@@ -1,14 +1,15 @@
 import api from '@/shared/services/api';
-import type { Guardia, CreateGuardiaPayload, GuardiaFilters, PaginatedResponse } from '../types/guardiaTypes';
+import type { Guardia, CreateGuardiaPayload, GuardiaFilters } from '../types/guardiaTypes';
 
 export async function getGuardias(
   materiaId: string,
   filters: Partial<GuardiaFilters>,
-): Promise<PaginatedResponse<Guardia>> {
-  const response = await api.get<PaginatedResponse<Guardia>>(`/materias/${materiaId}/guardias`, {
-    params: filters,
-  });
-  return response.data;
+): Promise<Guardia[]> {
+  const response = await api.get<{ items: Guardia[]; total: number }>(
+    `/materias/${materiaId}/guardias`,
+    { params: filters },
+  );
+  return response.data.items || [];
 }
 
 export async function createGuardia(

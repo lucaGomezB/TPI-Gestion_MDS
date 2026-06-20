@@ -14,34 +14,41 @@ function ComunicacionPreview({
   onBack,
   isSubmitting = false,
 }: ComunicacionPreviewProps): ReactNode {
+  const totalDestinatarios = preview.previews.length;
+  const firstPreview = preview.previews[0];
+
   return (
     <div className="space-y-6">
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Vista previa del mensaje</h3>
 
-        <div className="border-b border-gray-200 pb-4 mb-4">
-          <p className="text-sm text-gray-500 mb-1">Asunto:</p>
-          <p className="text-base font-medium text-gray-900">{preview.asunto_renderizado}</p>
-        </div>
+        {firstPreview && (
+          <>
+            <div className="border-b border-gray-200 pb-4 mb-4">
+              <p className="text-sm text-gray-500 mb-1">Asunto:</p>
+              <p className="text-base font-medium text-gray-900">{firstPreview.asunto_renderizado}</p>
+            </div>
 
-        <div className="mb-4">
-          <p className="text-sm text-gray-500 mb-1">Cuerpo:</p>
-          <div className="text-sm text-gray-900 whitespace-pre-wrap bg-gray-50 rounded-md p-4">
-            {preview.cuerpo_renderizado}
-          </div>
-        </div>
+            <div className="mb-4">
+              <p className="text-sm text-gray-500 mb-1">Cuerpo:</p>
+              <div className="text-sm text-gray-900 whitespace-pre-wrap bg-gray-50 rounded-md p-4">
+                {firstPreview.cuerpo_renderizado}
+              </div>
+            </div>
+          </>
+        )}
 
         <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
           <p className="text-sm font-medium text-blue-800 mb-2">
-            Este mensaje será enviado a <strong>{preview.total_destinatarios}</strong> destinatario(s)
+            Este mensaje será enviado a <strong>{totalDestinatarios}</strong> destinatario(s)
           </p>
-          {preview.destinatarios_ejemplo.length > 0 && (
+          {preview.previews.length > 0 && (
             <div className="text-sm text-blue-700">
-              <p className="mb-1">Ejemplos de destinatarios:</p>
+              <p className="mb-1">Destinatarios de la vista previa:</p>
               <ul className="list-disc list-inside space-y-1">
-                {preview.destinatarios_ejemplo.map((d, i) => (
+                {preview.previews.map((d, i) => (
                   <li key={i}>
-                    {d.nombre} ({d.email})
+                    {d.alumno_nombre} ({d.email_preview})
                   </li>
                 ))}
               </ul>

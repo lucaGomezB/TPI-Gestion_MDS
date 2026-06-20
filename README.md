@@ -72,11 +72,11 @@ docker compose down
 cd backend
 
 # Crear y activar entorno virtual
-python -m venv venv
+python -m venv .venv
 # Windows:
-venv\Scripts\activate
+.venv\Scripts\activate
 # macOS/Linux:
-source venv/bin/activate
+source .venv/bin/activate
 
 # Instalar dependencias
 pip install -r requirements.txt

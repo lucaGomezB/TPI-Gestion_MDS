@@ -31,7 +31,7 @@ function CohortesPage(): ReactNode {
   const handleUpdate = async (data: CreateCohorteData) => {
     if (!editingItem?.id) return;
     try {
-      await updateMutation.mutateAsync({ id: editingItem.id, data: { ...data, activo: editingItem.activo } });
+      await updateMutation.mutateAsync({ id: editingItem.id, data: { ...data, estado: editingItem.estado } });
       setEditingItem(null);
     } catch {
       // Error handled by query client
@@ -43,7 +43,7 @@ function CohortesPage(): ReactNode {
     try {
       await updateMutation.mutateAsync({
         id: item.id,
-        data: { ...item, activo: !item.activo },
+        data: { ...item, estado: item.estado === 'Activa' ? 'Inactiva' : 'Activa' },
       });
     } catch {
       // Error handled by query client
@@ -162,8 +162,8 @@ function CohortesPage(): ReactNode {
               keyExtractor={(item) => item.id ?? ''}
               onEdit={(item) => setEditingItem(item)}
               onToggle={handleToggle}
-              toggleLabel={(item) => (item.activo ? 'Activa' : 'Inactiva')}
-              toggleActive={(item) => !!item.activo}
+              toggleLabel={(item) => item.estado}
+              toggleActive={(item) => item.estado === 'Activa'}
             />
           )}
         </>

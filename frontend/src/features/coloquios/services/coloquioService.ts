@@ -16,8 +16,8 @@ export async function getConvocatorias(
   const url = params?.materia_id
     ? `/materias/${params.materia_id}/coloquios`
     : '/coloquios';
-  const response = await api.get<ConvocatoriaColoquio[]>(url);
-  return response.data;
+  const response = await api.get<{ items: ConvocatoriaColoquio[]; total: number }>(url);
+  return response.data.items || [];
 }
 
 export async function createConvocatoria(

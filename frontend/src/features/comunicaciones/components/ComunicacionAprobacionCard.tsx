@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import type { Comunicacion } from '../types';
+import type { Comunicacion, EstadoComunicacion } from '../types';
 import EstadoBadge from './EstadoBadge';
 
 interface ComunicacionAprobacionCardProps {
@@ -33,11 +33,11 @@ function ComunicacionAprobacionCard({
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <h3 className="text-lg font-semibold text-gray-900">{comunicacion.asunto}</h3>
-            <EstadoBadge estado={comunicacion.estado} />
+            <h3 className="text-lg font-semibold text-gray-900">Lote {comunicacion.id.substring(0, 8)}</h3>
+            <EstadoBadge estado={comunicacion.estado as EstadoComunicacion} />
           </div>
           <p className="text-sm text-gray-500 mb-1">
-            Destinatarios: {comunicacion.destinatarios_count}
+            Total destinatarios: {comunicacion.total}
           </p>
           <p className="text-sm text-gray-500">
             Creado: {new Date(comunicacion.created_at).toLocaleDateString('es-AR')}
@@ -46,7 +46,12 @@ function ComunicacionAprobacionCard({
       </div>
 
       <div className="bg-gray-50 rounded-md p-4 mb-4">
-        <p className="text-sm text-gray-700 whitespace-pre-wrap">{comunicacion.cuerpo}</p>
+        <p className="text-sm text-gray-700">
+          Enviados: {comunicacion.enviados} / Fallidos: {comunicacion.fallidos}
+        </p>
+        {comunicacion.requiere_aprobacion && (
+          <p className="text-sm text-yellow-700 mt-1">Requiere aprobación</p>
+        )}
       </div>
 
       {!showRechazar ? (

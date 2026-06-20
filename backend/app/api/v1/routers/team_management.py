@@ -203,3 +203,64 @@ async def exportar_equipo(
             media_type="text/csv",
             headers={"Content-Disposition": "attachment; filename=equipo.csv"},
         )
+
+
+# ── GET /api/mis-equipos — Equipos del usuario autenticado ─────────────────
+
+
+@router.get(
+    "/api/mis-equipos",
+    status_code=200,
+)
+async def get_mis_equipos(
+    current_user: Annotated[dict, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> list[dict]:
+    """Return the current user's equipo assignments with materia and cohorte info.
+
+    Accessible by any authenticated user. Returns a summary of each assignment
+    with materia name, cohorte label, role, comisiones, and vigencia dates.
+    """
+    tenant_id_str = current_user.get("tenant_id", "")
+    usuario_id_str = current_user.get("id", "")
+
+    async with UnitOfWork(db, tenant_id_str) as uow:
+        asignaciones = await uow.asignacion.list_by_filters(
+            usuario_id=usuario_id_str,
+            vigente=True,
+        )
+
+        if not asignaciones:
+            return []
+
+        # Collect referenced materia and cohorte IDs
+        materia_ids = {a.materia_id for a in asignaciones if a.materia_id}
+        cohorte_ids = {a.cohorte_id for a in asignaciones if a.cohorte_id}
+
+        # Fetch names
+        materia_nombres: dict[str, str] = {}
+        for mid in materia_ids:
+            m = await uow.materia.get_by_id(mid)
+            if m:
+                materia_nombres[m.id] = m.nombre
+
+        cohorte_nombres: dict[str, str] = {}
+        for cid in cohorte_ids:
+            c = await uow.cohorte.get_by_id(cid)
+            if c:
+                cohorte_nombres[c.id] = str(c.nombre)
+
+        return [
+            {
+                "id": a.id,
+                "materia_id": a.materia_id,
+                "materia_nombre": materia_nombres.get(a.materia_id, "") if a.materia_id else "",
+                "cohorte_id": a.cohorte_id,
+                "cohorte_nombre": cohorte_nombres.get(a.cohorte_id, "") if a.cohorte_id else "",
+                "rol": a.rol,
+                "comisiones": a.comisiones,
+                "vig_desde": a.vig_desde.isoformat() if a.vig_desde else None,
+                "vig_hasta": a.vig_hasta.isoformat() if a.vig_hasta else None,
+            }
+            for a in asignaciones
+        ]

@@ -19,7 +19,7 @@ function LiquidacionesPage() {
   const [periodo, setPeriodo] = useState(getCurrentPeriodo);
   const [viewTab, setViewTab] = useState<ViewTab>('general');
 
-  const { data, isLoading, isError, refetch } = useLiquidacionList({ periodo, page_size: 200 });
+  const { data, isLoading, isError, refetch } = useLiquidacionList({ periodo, page_size: 100 });
 
   const { generalItems, nexoItems, facturadoresItems } = useMemo(() => {
     if (!data?.items) return { generalItems: [], nexoItems: [], facturadoresItems: [] };

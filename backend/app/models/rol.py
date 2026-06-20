@@ -13,10 +13,10 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import AppModel
-from app.models.mixins import TenantMixin, TimestampMixin
+from app.models.mixins import AuditMixin, TenantMixin, TimestampMixin
 
 
-class Rol(AppModel, TimestampMixin, TenantMixin):
+class Rol(AppModel, TimestampMixin, TenantMixin, AuditMixin):
     """A named role that groups a set of permissions within a tenant."""
 
     __tablename__ = "roles"

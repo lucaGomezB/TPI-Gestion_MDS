@@ -1,4 +1,6 @@
 // ─── Comunicaciones (envío masivo) ───
+// Backend schemas: PreviewRequest, PreviewItem, PreviewResponse,
+//   EnviarRequest, LoteResponse, ComunicacionResponse, AprobarRequest
 
 export type EstadoComunicacion =
   | 'Pendiente'
@@ -7,126 +9,142 @@ export type EstadoComunicacion =
   | 'Fallido'
   | 'Cancelado';
 
+/** Backend LoteResponse — batch summary for status tracking. */
 export interface Comunicacion {
   id: string;
   materia_id: string;
-  asunto: string;
-  cuerpo: string;
-  estado: EstadoComunicacion;
+  total: number;
+  enviados: number;
+  fallidos: number;
+  estado: string;
   requiere_aprobacion: boolean;
-  aprobado_por?: string | null;
-  rechazado_por?: string | null;
-  motivo_rechazo?: string | null;
-  destinatarios_count: number;
-  enviados_count: number;
-  fallidos_count: number;
-  creado_por: string;
   created_at: string;
-  updated_at: string;
 }
 
+/** Backend PreviewRequest — no extra fields (extra='forbid'). */
 export interface ComunicacionPreviewRequest {
   asunto: string;
   cuerpo: string;
-  materia_id: string;
+  alumno_ids?: string[];
 }
 
+/** Backend PreviewResponse — returns previews array. */
 export interface ComunicacionPreviewResponse {
-  asunto_renderizado: string;
-  cuerpo_renderizado: string;
-  destinatarios_ejemplo: Array<{
-    nombre: string;
-    email: string;
+  previews: Array<{
+    alumno_nombre: string;
+    email_preview: string;
+    asunto_renderizado: string;
+    cuerpo_renderizado: string;
   }>;
-  total_destinatarios: number;
 }
 
+/** Backend EnviarRequest — requires preview_confirmado. */
 export interface ComunicacionEnviarRequest {
   asunto: string;
   cuerpo: string;
-  materia_id: string;
-  requiere_aprobacion?: boolean;
+  preview_confirmado: boolean;
+  alumno_ids?: string[];
 }
 
+/** Backend AprobarRequest — note: 'motivo' not 'motivo_rechazo'. */
 export interface AprobarComunicacionRequest {
   accion: 'aprobar' | 'rechazar';
-  motivo_rechazo?: string;
+  motivo?: string;
 }
 
 // ─── Avisos (tablón) ───
+// Backend schemas: AvisoCreate, AvisoUpdate, AvisoResponse, AckResponse
+// Enums: AlcanceAviso (Global|PorMateria|PorCohorte|PorRol),
+//        SeveridadAviso (Baja|Media|Alta|Critico)
 
 export type AlcanceAviso = 'Global' | 'PorMateria' | 'PorCohorte' | 'PorRol';
-export type SeveridadAviso = 'Info' | 'Advertencia' | 'Critico';
+export type SeveridadAviso = 'Baja' | 'Media' | 'Alta' | 'Critico';
 
+/** Backend AvisoResponse — from_attributes, includes ack_count. */
 export interface Aviso {
   id: string;
+  tenant_id: string;
+  alcance: string;
+  materia_id?: string | null;
+  cohorte_id?: string | null;
+  rol_destino?: string | null;
+  severidad: string;
   titulo: string;
-  contenido: string;
-  alcance: AlcanceAviso;
-  contexto_id?: string | null;
-  roles_destino?: string[] | null;
-  severidad: SeveridadAviso;
-  inicio_vigencia: string;
-  fin_vigencia: string;
-  requiere_acuse: boolean;
+  cuerpo: string;
+  inicio_en: string;
+  fin_en: string;
+  orden: number;
   activo: boolean;
+  requiere_ack: boolean;
   created_at: string;
   updated_at: string;
+  ack_count: number;
 }
 
+/** Backend AvisoCreate — used for both create and form data. */
 export interface AvisoFormData {
   titulo: string;
-  contenido: string;
+  cuerpo: string;
   alcance: AlcanceAviso;
-  contexto_id?: string;
-  roles_destino?: string[];
+  materia_id?: string;
+  cohorte_id?: string;
+  rol_destino?: string;
   severidad: SeveridadAviso;
-  inicio_vigencia: string;
-  fin_vigencia: string;
-  requiere_acuse: boolean;
+  inicio_en: string;
+  fin_en: string;
+  orden?: number;
+  activo?: boolean;
+  requiere_ack?: boolean;
 }
 
+/** Backend AckResponse. */
 export interface AcknowledgmentAviso {
-  id: string;
-  aviso_id: string;
-  usuario_id: string;
-  created_at: string;
+  acknowledged: boolean;
+  leido_en: string;
 }
 
 // ─── Mensajería interna ───
+// Backend schemas: MensajeCreate, MensajeResponder, MensajeResponse,
+//   HiloResponse, InboxItemResponse, InboxResponse
 
+/** Backend InboxItemResponse — thread summary. */
 export interface HiloMensaje {
-  id: string;
+  hilo_id: string;
   asunto: string;
-  participantes: Array<{
-    id: string;
-    nombre: string;
-    apellido: string;
-  }>;
   ultimo_mensaje: string;
-  ultimo_mensaje_en: string;
+  ultima_fecha: string;
+  remitente_nombre: string;
   no_leidos: number;
-  created_at: string;
 }
 
+/** Backend MensajeResponse. */
 export interface Mensaje {
   id: string;
   hilo_id: string;
-  emisor_id: string;
-  emisor_nombre: string;
-  emisor_apellido: string;
-  receptor_id: string;
-  contenido: string;
+  remitente_id: string;
+  destinatario_id: string;
+  asunto: string;
+  cuerpo: string;
   leido: boolean;
   created_at: string;
 }
 
-export interface MensajeRequest {
-  receptor_id: string;
+/** Backend HiloResponse — returned by GET /mensajes/{id}. */
+export interface HiloResponse {
+  hilo_id: string;
   asunto: string;
-  contenido: string;
+  participantes: string[];
+  mensajes: Mensaje[];
 }
 
+/** Backend MensajeCreate — note: destinatario_id, cuerpo (not receptor_id, contenido). */
+export interface MensajeRequest {
+  destinatario_id: string;
+  asunto: string;
+  cuerpo: string;
+}
+
+/** Backend MensajeResponder — note: cuerpo (not contenido). */
 export interface ResponderMensajeRequest {
-  contenido: string;
+  cuerpo: string;
 }

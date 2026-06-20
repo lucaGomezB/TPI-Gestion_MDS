@@ -15,8 +15,8 @@ from typing import Any
 from app.core.action_codes import AccionAuditoria
 from app.core.unit_of_work import UnitOfWork
 from app.schemas.reportes import (
-    MonitorEntryOut,
-    MonitorGeneralResponse,
+    MonitorGeneralAggregatedResponse,
+    MonitorGeneralItemOut,
     SeguimientoActividadOut,
     SeguimientoEntryOut,
     SeguimientoResponse,
@@ -51,8 +51,9 @@ class ReportesMonitorService:
         busqueda: str | None = None,
         fecha_desde: date | None = None,
         fecha_hasta: date | None = None,
-    ) -> MonitorGeneralResponse:
-        """Get cross-subject activity status for all students.
+        status: str | None = None,
+    ) -> MonitorGeneralAggregatedResponse:
+        """Get cross-subject activity status aggregated by materia+cohorte+comision.
 
         Args:
             materia_id: Optional filter by materia.
@@ -62,9 +63,10 @@ class ReportesMonitorService:
             busqueda: Optional ILIKE search on nombre/apellidos.
             fecha_desde: Optional date range start.
             fecha_hasta: Optional date range end.
+            status: Optional filter: "con_atrasados" or "sin_datos".
 
         Returns:
-            A ``MonitorGeneralResponse`` with items and aggregate metrics.
+            A ``MonitorGeneralAggregatedResponse`` with items and aggregate metrics.
         """
         items_data = await self.repo.get_monitor_general(
             materia_id=materia_id,
@@ -76,32 +78,67 @@ class ReportesMonitorService:
             fecha_hasta=fecha_hasta,
         )
 
-        metrics = await self.repo.get_metricas_generales()
+        # Aggregate per-student data into per-materia+cohorte+comision groups
+        from collections import defaultdict
 
-        items = [
-            MonitorEntryOut(
-                entrada_padron_id=item["entrada_padron_id"],
-                nombre=item["nombre"],
-                apellidos=item["apellidos"],
-                comision=item.get("comision"),
-                regional=item.get("regional"),
-                materia_nombre=item["materia_nombre"],
-                materia_id=item["materia_id"],
-                total_actividades=item["total_actividades"],
-                total_aprobadas=item["total_aprobadas"],
-                total_pendientes=item["total_pendientes"],
-                ultima_actividad=item.get("ultima_actividad"),
+        groups: dict[tuple, list[dict]] = defaultdict(list)
+        for item in items_data:
+            key = (
+                item["materia_id"],
+                item["materia_nombre"],
+                item.get("cohorte_nombre", ""),
+                item.get("comision") or "",
             )
-            for item in items_data
-        ]
+            groups[key].append(item)
 
-        return MonitorGeneralResponse(
-            items=items,
-            total=len(items),
-            total_alumnos=metrics["total_alumnos"],
-            total_materias=metrics["total_materias"],
-            total_actividades=metrics["total_actividades"],
-            total_aprobadas=metrics["total_aprobadas"],
+        aggregated: list[MonitorGeneralItemOut] = []
+        for (mat_id, mat_nombre, cohorte, com), students in groups.items():
+            unique_students = set(s["entrada_padron_id"] for s in students)
+            total_alumnos = len(unique_students)
+            total_actividades = sum(s["total_actividades"] for s in students)
+            total_pendientes_sum = sum(s["total_pendientes"] for s in students)
+
+            # Students with 0 pendientes = aprobados (completely caught up)
+            aprobados = sum(1 for s in students if s["total_pendientes"] == 0)
+            reprobados = total_alumnos - aprobados
+
+            # Average approval ratio across students
+            ratios = [
+                s["total_aprobadas"] / s["total_actividades"]
+                if s["total_actividades"] > 0
+                else 0.0
+                for s in students
+            ]
+            promedio_general = round(
+                sum(ratios) / len(ratios) if ratios else 0.0,
+                2,
+            )
+
+            aggregated.append(
+                MonitorGeneralItemOut(
+                    materia_id=mat_id,
+                    materia_nombre=mat_nombre,
+                    cohorte=cohorte,
+                    comision=com if com else None,
+                    total_alumnos=total_alumnos,
+                    total_actividades=total_actividades,
+                    promedio_general=promedio_general,
+                    aprobados=aprobados,
+                    reprobados=reprobados,
+                    atrasados_count=reprobados,
+                    pendientes_count=total_pendientes_sum,
+                )
+            )
+
+        # Apply status filter at the aggregated level
+        if status == "con_atrasados":
+            aggregated = [a for a in aggregated if a.atrasados_count > 0]
+        elif status == "sin_datos":
+            aggregated = [a for a in aggregated if a.total_actividades == 0]
+
+        return MonitorGeneralAggregatedResponse(
+            items=aggregated,
+            total=len(aggregated),
         )
 
     # ── Seguimiento (F2.8, F2.9) ───────────────────────────────────────

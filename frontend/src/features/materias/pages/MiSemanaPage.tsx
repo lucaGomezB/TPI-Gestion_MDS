@@ -22,7 +22,7 @@ function MiSemanaPage(): ReactNode {
       queryKey: ['materia', m.id, 'dashboard-kpi'],
       queryFn: async () => {
         const [atrasadosRes, reportesRes] = await Promise.allSettled([
-          api.get<Atrasado[]>(`/materias/${m.id}/atrasados`),
+          api.get<{ items: Atrasado[]; total: number }>(`/materias/${m.id}/atrasados`),
           api.get<Reporte>(`/materias/${m.id}/reportes`),
         ]);
 
@@ -32,7 +32,7 @@ function MiSemanaPage(): ReactNode {
           // This comes from an enriched endpoint in the backend
         }
 
-        const atrasados_count = atrasadosRes.status === 'fulfilled' ? atrasadosRes.value.data.length : 0;
+        const atrasados_count = atrasadosRes.status === 'fulfilled' ? (atrasadosRes.value.data.items?.length || 0) : 0;
         const pendientes_count = reportesRes.status === 'fulfilled' ? reportesRes.value.data.atrasados : 0;
         const hasKpiError = atrasadosRes.status === 'rejected' || reportesRes.status === 'rejected';
         const error = hasKpiError ? 'Error al cargar datos' : undefined;

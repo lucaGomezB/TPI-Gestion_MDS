@@ -16,11 +16,12 @@ from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import get_current_user, get_db, require_permission
 from app.core.unit_of_work import UnitOfWork
-from app.schemas.reportes import MonitorGeneralResponse
+from app.schemas.reportes import MonitorGeneralAggregatedResponse
 from app.services.reportes_monitor import ReportesMonitorService
 
 logger = logging.getLogger(__name__)
@@ -32,8 +33,8 @@ router = APIRouter(tags=["admin", "reportes"])
 
 
 @router.get(
-    "/api/admin/monitor/actividades",
-    response_model=MonitorGeneralResponse,
+    "/api/admin/materias/monitor-general",
+    response_model=MonitorGeneralAggregatedResponse,
 )
 async def monitor_actividades(
     _: Annotated[None, Depends(require_permission("reportes:monitor_general"))],
@@ -48,8 +49,8 @@ async def monitor_actividades(
     comision: Annotated[
         str | None, Query(description="Filter by comision")
     ] = None,
-    estado_actividad: Annotated[
-        str | None, Query(description="Filter by 'pendiente' or 'completo'")
+    status: Annotated[
+        str | None, Query(description="Filter: todos, con_atrasados, sin_datos")
     ] = None,
     busqueda: Annotated[
         str | None, Query(description="Search by nombre or apellidos")
@@ -60,7 +61,7 @@ async def monitor_actividades(
     fecha_hasta: Annotated[
         date | None, Query(description="Filter grades until date")
     ] = None,
-) -> MonitorGeneralResponse:
+) -> MonitorGeneralAggregatedResponse:
     """Get cross-subject activity monitoring for the tenant (F2.7).
 
     Only available for COORDINADOR and ADMIN roles.
@@ -72,13 +73,13 @@ async def monitor_actividades(
         materia_id: Optional filter by materia.
         regional: Optional filter by student regional.
         comision: Optional filter by comision.
-        estado_actividad: Optional filter by "pendiente" or "completo".
+        status: Optional filter: todos, con_atrasados, sin_datos.
         busqueda: Optional search by student name.
         fecha_desde: Optional date range start.
         fecha_hasta: Optional date range end.
 
     Returns:
-        A ``MonitorGeneralResponse`` with items and aggregate metrics.
+        A ``MonitorGeneralAggregatedResponse`` with aggregated items.
     """
     tenant_id = current_user.get("tenant_id", "")
 
@@ -88,10 +89,10 @@ async def monitor_actividades(
             materia_id=materia_id,
             regional=regional,
             comision=comision,
-            estado_actividad=estado_actividad,
             busqueda=busqueda,
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
+            status=status,
         )
 
         # Audit log
@@ -100,3 +101,67 @@ async def monitor_actividades(
         )
 
         return result
+
+
+@router.get(
+    "/api/admin/materias/monitor-general/export",
+)
+async def export_monitor_general(
+    _: Annotated[None, Depends(require_permission("reportes:monitor_general"))],
+    current_user: Annotated[dict, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    materia_id: Annotated[
+        str | None, Query(description="Filter by materia ID")
+    ] = None,
+    regional: Annotated[
+        str | None, Query(description="Filter by regional")
+    ] = None,
+    comision: Annotated[
+        str | None, Query(description="Filter by comision")
+    ] = None,
+    busqueda: Annotated[
+        str | None, Query(description="Search by nombre or apellidos")
+    ] = None,
+    status: Annotated[
+        str | None, Query(description="Filter: todos, con_atrasados, sin_datos")
+    ] = None,
+) -> StreamingResponse:
+    """Export monitor general data as CSV.
+
+    Returns a StreamingResponse with Content-Type text/csv for browser download.
+    """
+    import csv
+    import io
+    from fastapi.responses import StreamingResponse
+
+    tenant_id = current_user.get("tenant_id", "")
+
+    async with UnitOfWork(db, tenant_id) as uow:
+        service = ReportesMonitorService(uow)
+        result = await service.get_monitor_general(
+            materia_id=materia_id,
+            regional=regional,
+            comision=comision,
+            busqueda=busqueda,
+            status=status,
+        )
+
+        output = io.StringIO()
+        writer = csv.DictWriter(
+            output,
+            fieldnames=[
+                "materia_id", "materia_nombre", "cohorte", "comision",
+                "total_alumnos", "total_actividades", "promedio_general",
+                "aprobados", "reprobados", "atrasados_count", "pendientes_count",
+            ],
+        )
+        writer.writeheader()
+        for item in result.items:
+            writer.writerow(item.model_dump())
+
+        output.seek(0)
+        return StreamingResponse(
+            iter([output.getvalue()]),
+            media_type="text/csv",
+            headers={"Content-Disposition": "attachment; filename=monitor-general.csv"},
+        )

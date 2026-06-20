@@ -5,7 +5,7 @@ import ErrorDisplay from '@/shared/components/ErrorDisplay';
 import EmptyState from '@/shared/components/EmptyState';
 import AbonarFacturaModal from '../components/AbonarFacturaModal';
 import { useFacturasAdmin } from '../hooks/useFacturas';
-import { getDescargarFacturaUrl } from '../services/facturaService';
+import { descargarFacturaAdmin } from '../services/facturaService';
 
 function FacturasAdminPage() {
   const [estado, setEstado] = useState('');
@@ -118,14 +118,12 @@ function FacturasAdminPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right space-x-2">
-                      <a
-                        href={getDescargarFacturaUrl(factura.id)}
+                      <button
+                        onClick={() => void descargarFacturaAdmin(factura.id)}
                         className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
-                        target="_blank"
-                        rel="noopener noreferrer"
                       >
                         Descargar
-                      </a>
+                      </button>
                       {factura.estado === 'Pendiente' && (
                         <button
                           onClick={() => setAbonarModal(factura.id)}

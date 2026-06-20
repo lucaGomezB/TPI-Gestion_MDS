@@ -1,8 +1,9 @@
-import { useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EncuentroForm from '../components/EncuentroForm';
 import { useCreateSlot } from '../hooks/useCreateSlot';
 import { useCreateUnico } from '../hooks/useCreateUnico';
+import { useMaterias } from '@/features/materias/services/useMaterias';
 import PageHeader from '@/shared/components/PageHeader';
 import type { CreateSlotPayload, CreateUnicoPayload } from '../types/encuentroTypes';
 
@@ -13,8 +14,14 @@ function EncuentroCreatePage(): ReactNode {
   const [modo, setModo] = useState<Modo>('recurrente');
   const createSlot = useCreateSlot();
   const createUnico = useCreateUnico();
+  const { data: materias, isLoading: materiasLoading } = useMaterias();
 
   const isSubmitting = createSlot.isPending || createUnico.isPending;
+
+  const materiasOptions = useMemo(
+    () => (materias ?? []).map((m) => ({ value: m.id, label: m.nombre })),
+    [materias],
+  );
 
   const handleSubmit = (data: CreateSlotPayload | CreateUnicoPayload) => {
     if (modo === 'recurrente') {
@@ -41,8 +48,8 @@ function EncuentroCreatePage(): ReactNode {
         modo={modo}
         onModoChange={setModo}
         onSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-        materiasOptions={[]}
+        isSubmitting={isSubmitting || materiasLoading}
+        materiasOptions={materiasOptions}
       />
     </div>
   );

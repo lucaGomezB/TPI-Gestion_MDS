@@ -34,7 +34,7 @@ function MateriasPage(): ReactNode {
   const handleUpdate = async (data: CreateMateriaData) => {
     if (!editingItem?.id) return;
     try {
-      await updateMutation.mutateAsync({ id: editingItem.id, data: { nombre: data.nombre, activo: editingItem.activo } });
+      await updateMutation.mutateAsync({ id: editingItem.id, data: { nombre: data.nombre, estado: editingItem.estado } });
       setEditingItem(null);
     } catch {
       // Error handled by query client
@@ -46,7 +46,7 @@ function MateriasPage(): ReactNode {
     try {
       await updateMutation.mutateAsync({
         id: item.id,
-        data: { nombre: item.nombre, activo: !item.activo },
+        data: { nombre: item.nombre, estado: item.estado === 'Activa' ? 'Inactiva' : 'Activa' },
       });
     } catch {
       // Error handled by query client
@@ -113,8 +113,8 @@ function MateriasPage(): ReactNode {
             keyExtractor={(item) => item.id ?? item.codigo}
             onEdit={(item) => setEditingItem(item)}
             onToggle={handleToggle}
-            toggleLabel={(item) => (item.activo ? 'Activa' : 'Inactiva')}
-            toggleActive={(item) => !!item.activo}
+            toggleLabel={(item) => item.estado}
+            toggleActive={(item) => item.estado === 'Activa'}
             actions={(item) => (
               <button
                 onClick={() =>

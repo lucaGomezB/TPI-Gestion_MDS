@@ -61,7 +61,7 @@ export const navigationConfig: NavSection[] = [
     title: 'Auditoría',
     items: [
       { label: 'Log de Auditoría', path: '/admin/auditoria', icon: 'clipboard', permissions: ['ADMIN', 'COORDINADOR'] },
-      { label: 'Dashboard', path: '/admin/auditoria/dashboard', icon: 'chart', permissions: ['ADMIN', 'COORDINADOR'] },
+      { label: 'Dashboard Auditoría', path: '/admin/auditoria/dashboard', icon: 'chart', permissions: ['ADMIN', 'COORDINADOR'] },
     ],
   },
   {

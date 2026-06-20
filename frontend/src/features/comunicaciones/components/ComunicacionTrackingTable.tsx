@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { Comunicacion } from '../types';
+import type { Comunicacion, EstadoComunicacion } from '../types';
 import EstadoBadge from './EstadoBadge';
 import Loading from '@/shared/components/Loading';
 import EmptyState from '@/shared/components/EmptyState';
@@ -37,13 +37,13 @@ function ComunicacionTrackingTable({
         <thead className="bg-gray-50">
           <tr>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Asunto
+              ID
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Estado
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Destinatarios
+              Total
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Progreso
@@ -59,11 +59,13 @@ function ComunicacionTrackingTable({
         <tbody className="bg-white divide-y divide-gray-200">
           {comunicaciones.map((com) => (
             <tr key={com.id} className="hover:bg-gray-50 transition-colors">
-              <td className="px-6 py-4 text-sm font-medium text-gray-900">{com.asunto}</td>
-              <td className="px-6 py-4">
-                <EstadoBadge estado={com.estado} />
+              <td className="px-6 py-4 text-sm font-medium text-gray-900 font-mono">
+                {com.id.substring(0, 8)}...
               </td>
-              <td className="px-6 py-4 text-sm text-gray-600">{com.destinatarios_count}</td>
+              <td className="px-6 py-4">
+                <EstadoBadge estado={com.estado as EstadoComunicacion} />
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-600">{com.total}</td>
               <td className="px-6 py-4">
                 {com.estado === 'Enviado' || com.estado === 'Enviando' ? (
                   <div className="flex items-center gap-2">
@@ -71,17 +73,17 @@ function ComunicacionTrackingTable({
                       <div
                         className="bg-green-500 h-2 rounded-full"
                         style={{
-                          width: `${com.destinatarios_count > 0 ? Math.round((com.enviados_count / com.destinatarios_count) * 100) : 0}%`,
+                          width: `${com.total > 0 ? Math.round((com.enviados / com.total) * 100) : 0}%`,
                         }}
                       />
                     </div>
                     <span className="text-xs text-gray-500">
-                      {com.enviados_count}/{com.destinatarios_count}
+                      {com.enviados}/{com.total}
                     </span>
                   </div>
                 ) : com.estado === 'Fallido' ? (
                   <span className="text-xs text-red-600">
-                    {com.fallidos_count} fallidos
+                    {com.fallidos} fallidos
                   </span>
                 ) : (
                   <span className="text-xs text-gray-400">—</span>

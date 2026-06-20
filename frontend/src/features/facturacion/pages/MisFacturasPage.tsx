@@ -5,7 +5,7 @@ import ErrorDisplay from '@/shared/components/ErrorDisplay';
 import EmptyState from '@/shared/components/EmptyState';
 import SubirFacturaModal from '../components/SubirFacturaModal';
 import { useMisFacturas } from '../hooks/useFacturas';
-import { getDescargarFacturaUrl } from '../services/facturaService';
+import { descargarMiFactura } from '../services/facturaService';
 
 function MisFacturasPage() {
   const [periodo, setPeriodo] = useState('');
@@ -88,14 +88,12 @@ function MisFacturasPage() {
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-700">{factura.cargada_at}</td>
                   <td className="px-4 py-3 text-right">
-                    <a
-                      href={getDescargarFacturaUrl(factura.id)}
+                    <button
+                      onClick={() => void descargarMiFactura(factura.id)}
                       className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
-                      target="_blank"
-                      rel="noopener noreferrer"
                     >
                       Descargar
-                    </a>
+                    </button>
                   </td>
                 </tr>
               ))}

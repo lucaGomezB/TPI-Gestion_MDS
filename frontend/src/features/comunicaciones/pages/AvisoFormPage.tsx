@@ -95,7 +95,7 @@ function AvisoFormPage(): ReactNode {
                   <div>
                     <p className="text-sm font-medium text-gray-900">{a.titulo}</p>
                     <p className="text-xs text-gray-500">
-                      {a.alcance} · {a.severidad} · {new Date(a.inicio_vigencia).toLocaleDateString('es-AR')} → {new Date(a.fin_vigencia).toLocaleDateString('es-AR')}
+                      {a.alcance} · {a.severidad} · {new Date(a.inicio_en).toLocaleDateString('es-AR')} → {new Date(a.fin_en).toLocaleDateString('es-AR')}
                     </p>
                   </div>
                 </div>

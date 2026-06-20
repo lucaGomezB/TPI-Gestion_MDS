@@ -13,10 +13,10 @@ export function useAtrasados(materiaId: string, filters: AtrasadosFilters = {}) 
   return useQuery({
     queryKey: ['materia', materiaId, 'atrasados', filters],
     queryFn: async () => {
-      const { data } = await api.get<Atrasado[]>(
+      const { data } = await api.get<{ items: Atrasado[]; total: number }>(
         `/materias/${materiaId}/atrasados${queryString ? `?${queryString}` : ''}`,
       );
-      return data;
+      return data.items || [];
     },
     staleTime: 1 * 60 * 1000,
   });
@@ -26,8 +26,10 @@ export function useRanking(materiaId: string) {
   return useQuery({
     queryKey: ['materia', materiaId, 'ranking'],
     queryFn: async () => {
-      const { data } = await api.get<RankingItem[]>(`/materias/${materiaId}/ranking`);
-      return data;
+      const { data } = await api.get<{ items: RankingItem[]; total: number }>(
+        `/materias/${materiaId}/ranking`,
+      );
+      return data.items || [];
     },
     staleTime: 1 * 60 * 1000,
   });

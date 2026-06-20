@@ -133,9 +133,10 @@ class ReservaEnAgenda(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    id: str
     alumno_id: str
     alumno_nombre: str | None = None
-    alumno_apellidos: str | None = None
+    alumno_apellido: str | None = None
     confirmada: bool
 
 
@@ -144,10 +145,23 @@ class DiaAgenda(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    id: str
     fecha: str
     cupos: int
     reservados: int
+    libre: int
     reservas: list[ReservaEnAgenda]
+
+
+class ConvocatoriaEnAgenda(BaseModel):
+    """Convocatoria metadata nested within the agenda response."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    materia_nombre: str
+    titulo: str
+    activa: bool
 
 
 class AgendaColoquioResponse(BaseModel):
@@ -155,8 +169,7 @@ class AgendaColoquioResponse(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    evaluacion_id: str
-    titulo: str
+    convocatoria: ConvocatoriaEnAgenda
     dias: list[DiaAgenda]
 
 

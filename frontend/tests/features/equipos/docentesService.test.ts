@@ -16,10 +16,10 @@ describe('docentesService', () => {
   });
 
   describe('getDocentes', () => {
-    it('calls GET /admin/usuarios?rol=docente', async () => {
+    it('calls GET /admin/usuarios', async () => {
       vi.mocked(api.get).mockResolvedValue({ data: [] });
       await docentesService.getDocentes();
-      expect(api.get).toHaveBeenCalledWith('/admin/usuarios', { params: { rol: 'docente' } });
+      expect(api.get).toHaveBeenCalledWith('/admin/usuarios');
     });
   });
 

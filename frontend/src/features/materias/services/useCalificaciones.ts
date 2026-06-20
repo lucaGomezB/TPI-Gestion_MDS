@@ -6,8 +6,10 @@ export function useCalificaciones(materiaId: string) {
   return useQuery({
     queryKey: ['materia', materiaId, 'calificaciones'],
     queryFn: async () => {
-      const { data } = await api.get<Calificacion[]>(`/materias/${materiaId}/calificaciones`);
-      return data;
+      const { data } = await api.get<{ items: Calificacion[]; total: number }>(
+        `/materias/${materiaId}/calificaciones`,
+      );
+      return data.items || [];
     },
     staleTime: 1 * 60 * 1000,
   });

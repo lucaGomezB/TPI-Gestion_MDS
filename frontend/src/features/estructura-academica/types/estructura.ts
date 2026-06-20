@@ -6,11 +6,11 @@ export const carreraSchema = z.object({
   id: z.string().uuid().optional(),
   codigo: z.string().min(1, 'El código es requerido').max(20),
   nombre: z.string().min(1, 'El nombre es requerido').max(200),
-  activo: z.boolean().default(true),
+  estado: z.enum(['Activa', 'Inactiva']).default('Activa'),
 });
 
-export const createCarreraSchema = carreraSchema.omit({ id: true, activo: true });
-export const updateCarreraSchema = carreraSchema.pick({ nombre: true, activo: true });
+export const createCarreraSchema = carreraSchema.omit({ id: true, estado: true });
+export const updateCarreraSchema = carreraSchema.pick({ nombre: true, estado: true });
 
 export type Carrera = z.infer<typeof carreraSchema>;
 export type CreateCarreraData = z.infer<typeof createCarreraSchema>;
@@ -25,10 +25,10 @@ export const cohorteSchema = z.object({
   anio_inicio: z.number().int().min(2000).max(2100),
   vig_desde: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato de fecha inválido (YYYY-MM-DD)'),
   vig_hasta: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato de fecha inválido (YYYY-MM-DD)'),
-  activo: z.boolean().default(true),
+  estado: z.enum(['Activa', 'Inactiva']).default('Activa'),
 });
 
-export const createCohorteSchema = cohorteSchema.omit({ id: true, activo: true });
+export const createCohorteSchema = cohorteSchema.omit({ id: true, estado: true });
 export const updateCohorteSchema = cohorteSchema.omit({ id: true });
 
 export type Cohorte = z.infer<typeof cohorteSchema>;
@@ -41,11 +41,11 @@ export const materiaSchema = z.object({
   id: z.string().uuid().optional(),
   codigo: z.string().min(1, 'El código es requerido').max(20),
   nombre: z.string().min(1, 'El nombre es requerido').max(200),
-  activo: z.boolean().default(true),
+  estado: z.enum(['Activa', 'Inactiva']).default('Activa'),
 });
 
-export const createMateriaSchema = materiaSchema.omit({ id: true, activo: true });
-export const updateMateriaSchema = materiaSchema.pick({ nombre: true, activo: true });
+export const createMateriaSchema = materiaSchema.omit({ id: true, estado: true });
+export const updateMateriaSchema = materiaSchema.pick({ nombre: true, estado: true });
 
 export type Materia = z.infer<typeof materiaSchema>;
 export type CreateMateriaData = z.infer<typeof createMateriaSchema>;

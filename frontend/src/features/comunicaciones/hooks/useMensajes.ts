@@ -5,7 +5,7 @@ import {
   enviarMensaje,
   responderMensaje,
 } from '../services/mensajesService';
-import type { MensajeRequest, ResponderMensajeRequest } from '../types';
+import type { HiloResponse, MensajeRequest, ResponderMensajeRequest } from '../types';
 
 const MENSAJES_KEY = ['mensajes'] as const;
 
@@ -16,8 +16,9 @@ export function useHilosMensajes() {
   });
 }
 
+/** Returns the full HiloResponse (includes hilo_id, asunto, participantes, mensajes). */
 export function useHiloMensaje(id: string) {
-  return useQuery({
+  return useQuery<HiloResponse>({
     queryKey: [...MENSAJES_KEY, id],
     queryFn: () => getHiloMensaje(id),
     enabled: !!id,

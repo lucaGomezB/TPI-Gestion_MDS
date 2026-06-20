@@ -11,6 +11,9 @@ Implements the core authentication flows:
 import hashlib
 from datetime import datetime, timedelta, timezone
 
+from fastapi import HTTPException
+from starlette.status import HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED
+
 import jwt as pyjwt
 import pyotp
 
@@ -29,6 +32,7 @@ from app.models.usuario import Usuario
 from app.schemas.auth import (
     TokenResponse,
     TwoFactorRequired,
+    UserInfo,
 )
 
 
@@ -60,9 +64,6 @@ class AuthService:
         Raises:
             HTTPException(401): If credentials are invalid or user is inactive.
         """
-        from fastapi import HTTPException
-        from starlette.status import HTTP_401_UNAUTHORIZED
-
         user = await self.uow.auth.find_by_email(tenant_id, email)
 
         # Generic error — don't reveal whether email exists or password is wrong
@@ -117,9 +118,6 @@ class AuthService:
         Raises:
             HTTPException(401): If the temp_token is invalid or the TOTP code is wrong.
         """
-        from fastapi import HTTPException
-        from starlette.status import HTTP_401_UNAUTHORIZED
-
         # Decode and validate temp_token
         try:
             payload = decode_access_token(temp_token)
@@ -178,9 +176,6 @@ class AuthService:
         Raises:
             HTTPException(401): If the token is revoked, expired, or invalid.
         """
-        from fastapi import HTTPException
-        from starlette.status import HTTP_401_UNAUTHORIZED
-
         token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
         stored_token = await self.uow.auth.find_refresh_token(token_hash)
 
@@ -300,9 +295,6 @@ class AuthService:
         Raises:
             HTTPException(400): If the token is invalid, expired, or already used.
         """
-        from fastapi import HTTPException
-        from starlette.status import HTTP_400_BAD_REQUEST
-
         token_hash = hashlib.sha256(token.encode()).hexdigest()
         stored_token = await self.uow.auth.find_password_reset_token(token_hash)
 
@@ -383,4 +375,12 @@ class AuthService:
             access_token=access_token,
             refresh_token=raw_token,
             token_type="bearer",
+            user=UserInfo(
+                id=user.id,
+                email=user.email,
+                nombre=user.nombre,
+                apellidos=user.apellidos,
+                rol=roles[0] if roles else "",
+                tenant_id=user.tenant_id,
+            ),
         )

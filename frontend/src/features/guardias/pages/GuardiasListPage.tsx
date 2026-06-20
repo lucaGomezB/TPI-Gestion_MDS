@@ -21,7 +21,7 @@ function GuardiasListPage(): ReactNode {
   if (isLoading) return <Loading skeleton />;
   if (isError) return <ErrorDisplay message={(error as Error)?.message} onRetry={refetch} />;
 
-  const dataArr = data?.data || [];
+  const dataArr = data || [];
 
   return (
     <div>

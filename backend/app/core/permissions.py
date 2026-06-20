@@ -17,6 +17,7 @@ Usage::
         ...
 """
 
+from collections import defaultdict
 from collections.abc import Callable
 
 # ── Permissions matrix (7 roles × permissions) ──────────────────────────────
@@ -161,6 +162,12 @@ ROL_PERMISSIONS: dict[str, set[str]] = {
         "usuario:gestionar",
         "auditoria:ver",
         "facturas:gestionar",
+        "facturas:subir",
+        "liquidaciones:configurar-salarios",
+        "grilla_salarial:operar",
+        "liquidaciones:ver",
+        "liquidaciones:calcular",
+        "liquidaciones:cerrar",
         "tenant:configurar",
     },
     "FINANZAS": {
@@ -176,6 +183,22 @@ ROL_PERMISSIONS: dict[str, set[str]] = {
         "facturas:gestionar",
     },
 }
+
+
+# ── Flat set of all permissions ─────────────────────────────────────────────
+
+ALL_PERMISSIONS: set[str] = set()
+for _perms in ROL_PERMISSIONS.values():
+    ALL_PERMISSIONS.update(_perms)
+
+# ── Permissions grouped by module for UI rendering ──────────────────────────
+
+PERMISSIONS_BY_MODULE: dict[str, list[str]] = defaultdict(list)
+for _perm in sorted(ALL_PERMISSIONS):
+    _modulo, _accion = _perm.split(":", 1)
+    PERMISSIONS_BY_MODULE[_modulo].append(_perm)
+
+# ── Permission check dependency factory ─────────────────────────────────────
 
 
 def require_permission(permission: str) -> Callable[[list[str]], bool]:

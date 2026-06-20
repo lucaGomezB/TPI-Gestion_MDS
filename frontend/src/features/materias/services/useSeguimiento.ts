@@ -16,10 +16,10 @@ export function useSeguimiento(materiaId: string, filters: SeguimientoFilters = 
   return useQuery({
     queryKey: ['materia', materiaId, 'seguimiento', filters],
     queryFn: async () => {
-      const { data } = await api.get<SeguimientoItem[]>(
+      const { data } = await api.get<{ items: SeguimientoItem[]; total: number }>(
         `/materias/${materiaId}/seguimiento${queryString ? `?${queryString}` : ''}`,
       );
-      return data;
+      return data.items || [];
     },
     staleTime: 1 * 60 * 1000,
   });

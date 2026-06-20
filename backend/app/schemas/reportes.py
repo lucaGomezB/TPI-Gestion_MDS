@@ -103,6 +103,36 @@ class MonitorGeneralResponse(BaseModel):
     total_aprobadas: int
 
 
+class MonitorGeneralItemOut(BaseModel):
+    """Aggregated monitor entry — per materia+cohorte+comision.
+
+    Matches the frontend ``MonitorGeneralItem`` type.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    materia_id: str
+    materia_nombre: str
+    cohorte: str
+    comision: str | None = None
+    total_alumnos: int
+    total_actividades: int
+    promedio_general: float
+    aprobados: int
+    reprobados: int
+    atrasados_count: int
+    pendientes_count: int
+
+
+class MonitorGeneralAggregatedResponse(BaseModel):
+    """Response for monitor general — aggregated view (F2.7)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[MonitorGeneralItemOut]
+    total: int
+
+
 # ── Seguimiento (F2.8, F2.9) ─────────────────────────────────────────────────
 
 

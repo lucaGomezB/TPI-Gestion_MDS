@@ -22,7 +22,7 @@ function ComunicacionesPage(): ReactNode {
   const [formData, setFormData] = useState<ComunicacionFormValues | null>(null);
   const [preview, setPreview] = useState<ComunicacionPreviewResponse | null>(null);
 
-  const { data: comunicaciones, isLoading, isError, refetch } = useComunicaciones(materiaIdFromUrl);
+  const { data: comunicaciones, isLoading, isError, refetch } = useComunicaciones(materiaIdFromUrl ?? '');
   const previewMutation = usePreviewComunicacion();
   const enviarMutation = useEnviarComunicacion();
   const cancelarMutation = useCancelarComunicacion();
@@ -32,7 +32,7 @@ function ComunicacionesPage(): ReactNode {
     try {
       const result = await previewMutation.mutateAsync({
         materiaId: data.materia_id,
-        data: { asunto: data.asunto, cuerpo: data.cuerpo, materia_id: data.materia_id },
+        data: { asunto: data.asunto, cuerpo: data.cuerpo },
       });
       setPreview(result);
       setStep('preview');
@@ -49,8 +49,7 @@ function ComunicacionesPage(): ReactNode {
         data: {
           asunto: formData.asunto,
           cuerpo: formData.cuerpo,
-          materia_id: formData.materia_id,
-          requiere_aprobacion: formData.requiere_aprobacion,
+          preview_confirmado: true,
         },
       });
       setStep('form');

@@ -8,17 +8,19 @@ import { useHiloMensaje, useResponderMensaje } from '../hooks/useMensajes';
 function MensajeDetailPage(): ReactNode {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data: mensajes, isLoading, isError, refetch } = useHiloMensaje(id ?? '');
+  const { data: hilo, isLoading, isError, refetch } = useHiloMensaje(id ?? '');
   const responderMutation = useResponderMensaje();
 
   const handleSend = async (contenido: string) => {
     if (!id) return;
     try {
-      await responderMutation.mutateAsync({ hiloId: id, data: { contenido } });
+      await responderMutation.mutateAsync({ hiloId: id, data: { cuerpo: contenido } });
     } catch {
       // Error handled by mutation
     }
   };
+
+  const mensajes = hilo?.mensajes;
 
   if (!id) {
     navigate('/mensajeria');

@@ -17,6 +17,7 @@ from app.core.unit_of_work import UnitOfWork
 from app.schemas.coloquios import (
     AgendaColoquioResponse,
     AlumnoImportado,
+    ConvocatoriaEnAgenda,
     DiaAgenda,
     DiaColoquioResponse,
     EvaluacionColoquioCreate,
@@ -287,10 +288,25 @@ class ColoquioService:
                 detail="Evaluacion not found",
             )
 
+        # ── Materia name ─────────────────────────────────────────────────
+        materia = await self.uow.materia.get_by_id(evaluacion.materia_id)
+        materia_nombre = materia.nombre if materia else "Sin materia"
+
         # Get all reservations for this evaluacion
         reservas = await self.uow.coloquio_reserva.list_by_evaluacion(
             evaluacion_id
         )
+
+        # ── Build alumno name lookup ──────────────────────────────────────
+        alumno_ids = {r.alumno_id for r in reservas}
+        alumno_lookup: dict[str, dict[str, str]] = {}
+        for alumno_id in alumno_ids:
+            usuario = await self.uow.admin_usuarios.get(alumno_id)
+            if usuario:
+                alumno_lookup[alumno_id] = {
+                    "nombre": usuario.nombre,
+                    "apellido": usuario.apellidos,
+                }
 
         # Group reservations by fecha
         reservas_por_fecha: dict[str, list[ReservaEnAgenda]] = {}
@@ -302,9 +318,13 @@ class ColoquioService:
             )
             if fecha_str not in reservas_por_fecha:
                 reservas_por_fecha[fecha_str] = []
+            alumno_info = alumno_lookup.get(reserva.alumno_id, {})
             reservas_por_fecha[fecha_str].append(
                 ReservaEnAgenda(
+                    id=reserva.id,
                     alumno_id=reserva.alumno_id,
+                    alumno_nombre=alumno_info.get("nombre"),
+                    alumno_apellido=alumno_info.get("apellido"),
                     confirmada=reserva.confirmada,
                 )
             )
@@ -314,12 +334,16 @@ class ColoquioService:
         for dia_entry in (evaluacion.dias or []):
             entry = dict(dia_entry)
             fecha_str = str(entry["fecha"])
+            cupos = entry.get("cupos", 0)
+            reservados = entry.get("reservados", 0)
             day_reservas = reservas_por_fecha.get(fecha_str, [])
             dias_list.append(
                 DiaAgenda(
+                    id=fecha_str,
                     fecha=fecha_str,
-                    cupos=entry.get("cupos", 0),
-                    reservados=entry.get("reservados", 0),
+                    cupos=cupos,
+                    reservados=reservados,
+                    libre=cupos - reservados,
                     reservas=day_reservas,
                 )
             )
@@ -328,8 +352,12 @@ class ColoquioService:
         dias_list.sort(key=lambda d: d.fecha)
 
         return AgendaColoquioResponse(
-            evaluacion_id=evaluacion_id,
-            titulo=evaluacion.titulo,
+            convocatoria=ConvocatoriaEnAgenda(
+                id=evaluacion_id,
+                materia_nombre=materia_nombre,
+                titulo=evaluacion.titulo,
+                activa=evaluacion.activa,
+            ),
             dias=dias_list,
         )
 

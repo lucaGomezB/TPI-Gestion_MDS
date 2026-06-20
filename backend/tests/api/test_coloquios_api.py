@@ -535,11 +535,15 @@ async def test_obtener_agenda_200(
     )
     assert response.status_code == 200
     data = response.json()
-    assert data["evaluacion_id"] == evaluacion_id
-    assert data["titulo"] == created_evaluacion["titulo"]
+    assert data["convocatoria"]["id"] == evaluacion_id
+    assert data["convocatoria"]["titulo"] == created_evaluacion["titulo"]
+    assert data["convocatoria"]["activa"] is True
+    assert "materia_nombre" in data["convocatoria"]
     assert len(data["dias"]) >= 1
+    assert data["dias"][0]["id"] is not None
     assert data["dias"][0]["fecha"] is not None
     assert data["dias"][0]["cupos"] >= 0
+    assert "libre" in data["dias"][0]
 
 
 @pytest.mark.asyncio

@@ -1,5 +1,7 @@
 """Application-level exception classes and standard HTTP exception handlers."""
 
+from typing import Any
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -17,6 +19,27 @@ class AppError(Exception):
         self.message = message
         self.status_code = status_code
         super().__init__(self.message)
+
+
+def _sanitize_validation_errors(errors: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Remove non-JSON-serializable objects from Pydantic validation error ctx.
+
+    Pydantic v2 stores the original ``ValueError`` (or other exception)
+    in ``ctx['error']`` when a ``model_validator`` raises it.  Passing that
+    object directly to ``json.dumps()`` raises ``TypeError: Object of type
+    ValueError is not JSON serializable``.
+
+    This function converts any ``Exception`` instance found inside ``ctx``
+    to its string representation.
+    """
+    for error in errors:
+        ctx = error.get("ctx")
+        if isinstance(ctx, dict):
+            error["ctx"] = {
+                k: str(v) if isinstance(v, Exception) else v
+                for k, v in ctx.items()
+            }
+    return errors
 
 
 def register_exception_handlers(app: FastAPI) -> None:
@@ -40,7 +63,7 @@ def register_exception_handlers(app: FastAPI) -> None:
     ) -> JSONResponse:
         return JSONResponse(
             status_code=400,
-            content={"detail": exc.errors()},
+            content={"detail": _sanitize_validation_errors(exc.errors())},
         )
 
     @app.exception_handler(AppError)

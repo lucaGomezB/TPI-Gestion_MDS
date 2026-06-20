@@ -24,8 +24,32 @@ export async function abonarFactura(id: string, descargar = false): Promise<Fact
   return response.data;
 }
 
-export function getDescargarFacturaUrl(id: string): string {
-  return `/api/admin/facturas/${id}/descargar`;
+export async function descargarFacturaAdmin(id: string): Promise<void> {
+  const response = await api.get(`/admin/facturas/${id}/descargar`, {
+    responseType: 'blob',
+  });
+  const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `factura-${id}.pdf`);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+}
+
+export async function descargarMiFactura(id: string): Promise<void> {
+  const response = await api.get(`/docentes/facturas/${id}/descargar`, {
+    responseType: 'blob',
+  });
+  const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `factura-${id}.pdf`);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
 }
 
 // ── Docente ────────────────────────────────────────────────────────────

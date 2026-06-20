@@ -125,10 +125,10 @@ class TestRequirePermission:
         checker = require_permission("liquidaciones:cerrar")
         assert checker(["FINANZAS"]) is True
 
-    def test_admin_lacks_liquidacion_cerrar(self):
-        """ADMIN should fail require_permission('liquidaciones:cerrar')."""
+    def test_admin_has_liquidacion_cerrar(self):
+        """ADMIN should pass require_permission('liquidaciones:cerrar') — needed for full liquidaciones access."""
         checker = require_permission("liquidaciones:cerrar")
-        assert checker(["ADMIN"]) is False
+        assert checker(["ADMIN"]) is True
 
     def test_rol_no_existente_no_crashea(self):
         """A role not in the matrix should be silently ignored."""

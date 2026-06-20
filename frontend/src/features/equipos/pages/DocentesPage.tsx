@@ -93,7 +93,7 @@ function DocentesPage(): ReactNode {
         </div>
       )}
 
-      {!docentes || docentes.length === 0 ? (
+      {!docentes || !Array.isArray(docentes) || docentes.length === 0 ? (
         <EmptyState
           title="No hay docentes"
           description="Cargue el primer docente para comenzar."
@@ -121,7 +121,7 @@ function DocentesPage(): ReactNode {
                   <td className="px-4 py-3 text-sm text-gray-700">{doc.email}</td>
                   <td className="px-4 py-3 text-sm text-gray-700">{doc.regional || '-'}</td>
                   <td className="px-4 py-3 text-sm text-gray-700">
-                    {doc.roles.join(', ')}
+                    {Array.isArray(doc.roles) ? doc.roles.join(', ') : '-'}
                   </td>
                   <td className="px-4 py-3 text-right text-sm">
                     <div className="flex items-center justify-end space-x-2">

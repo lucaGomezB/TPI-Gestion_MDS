@@ -18,9 +18,11 @@ function AvisoCard({
   const borderColor =
     aviso.severidad === 'Critico'
       ? 'border-l-red-500'
-      : aviso.severidad === 'Advertencia'
+      : aviso.severidad === 'Alta'
         ? 'border-l-yellow-500'
-        : 'border-l-blue-500';
+        : aviso.severidad === 'Media'
+          ? 'border-l-yellow-400'
+          : 'border-l-blue-500';
 
   return (
     <div className={`bg-white border border-gray-200 border-l-4 ${borderColor} rounded-lg p-5`}>
@@ -30,7 +32,7 @@ function AvisoCard({
           <SeveridadBadge severidad={aviso.severidad} />
           <span className="text-xs text-gray-400 capitalize">{aviso.alcance}</span>
         </div>
-        {aviso.requiere_acuse && !acknowledged && (
+        {aviso.requiere_ack && !acknowledged && (
           <button
             onClick={() => onAcknowledge?.(aviso.id)}
             disabled={isProcessing}
@@ -39,19 +41,19 @@ function AvisoCard({
             {isProcessing ? '...' : 'Confirmar lectura'}
           </button>
         )}
-        {aviso.requiere_acuse && acknowledged && (
+        {aviso.requiere_ack && acknowledged && (
           <span className="px-3 py-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-md">
             Leído
           </span>
         )}
       </div>
-      <p className="text-sm text-gray-700 whitespace-pre-wrap">{aviso.contenido}</p>
+      <p className="text-sm text-gray-700 whitespace-pre-wrap">{aviso.cuerpo}</p>
       <div className="mt-3 flex items-center gap-4 text-xs text-gray-400">
         <span>
-          Desde: {new Date(aviso.inicio_vigencia).toLocaleDateString('es-AR')}
+          Desde: {new Date(aviso.inicio_en).toLocaleDateString('es-AR')}
         </span>
         <span>
-          Hasta: {new Date(aviso.fin_vigencia).toLocaleDateString('es-AR')}
+          Hasta: {new Date(aviso.fin_en).toLocaleDateString('es-AR')}
         </span>
       </div>
     </div>

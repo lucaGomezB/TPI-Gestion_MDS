@@ -4,11 +4,13 @@ import { AuthProvider } from './features/auth/context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './components/MainLayout';
 import Loading from './shared/components/Loading';
+import RedirectPage from './shared/components/RedirectPage';
 
 const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'));
 const TwoFactorPage = lazy(() => import('./features/auth/pages/TwoFactorPage'));
 const ForgotPasswordPage = lazy(() => import('./features/auth/pages/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('./features/auth/pages/ResetPasswordPage'));
+const ProfilePage = lazy(() => import('./features/auth/pages/ProfilePage'));
 
 // Liquidaciones feature pages
 const LiquidacionesPage = lazy(() => import('./features/liquidaciones/pages/LiquidacionesPage'));
@@ -76,6 +78,12 @@ const MisEquiposPage = lazy(() => import('./features/equipos/pages/MisEquiposPag
 
 // Calendario Evaluaciones
 const CalendarioEvaluacionesPage = lazy(() => import('./features/calendario-evaluaciones/pages/CalendarioEvaluacionesPage'));
+const AdminUsuariosPage = lazy(() => import('./features/admin-usuarios/pages/AdminUsuariosPage'));
+const AdminRolesPage = lazy(() => import('./features/admin-roles/pages/AdminRolesPage'));
+const TareasPage = lazy(() => import('./features/tareas-internas/pages/TareasPage'));
+
+// Dashboard
+const DashboardPage = lazy(() => import('./features/dashboard/pages/DashboardPage'));
 
 function App() {
   return (
@@ -97,8 +105,14 @@ function App() {
                 </ProtectedRoute>
               }
             >
-              <Route path="/" element={<div className="text-center text-gray-500 py-12">Seleccione un módulo del menú lateral</div>} />
-              <Route path="/dashboard" element={<div className="text-center text-gray-500 py-12">Dashboard próximamente</div>} />
+              <Route path="/" element={
+                <RedirectPage
+                  title="Activia Trace"
+                  description="Seleccione un modulo del menu lateral para comenzar."
+                  links={[]}
+                />
+              } />
+              <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/materias" element={<MiSemanaPage />} />
               <Route path="/materias/:id" element={<MateriaDetailPage />} />
               <Route path="/materias/:id/atrasados" element={<AtrasadosPage />} />
@@ -107,9 +121,35 @@ function App() {
               <Route path="/materias/:id/notas-finales" element={<NotasFinalesPage />} />
               <Route path="/materias/:id/export-atrasados" element={<ExportAtrasadosPage />} />
               <Route path="/materias/:id/seguimiento" element={<SeguimientoPage />} />
-              <Route path="/alumnos" element={<div className="text-center text-gray-500 py-12">Alumnos próximamente</div>} />
-              <Route path="/comisiones" element={<div className="text-center text-gray-500 py-12">Comisiones próximamente</div>} />
-              <Route path="/calificaciones" element={<div className="text-center text-gray-500 py-12">Calificaciones próximamente</div>} />
+              <Route path="/alumnos" element={
+                <RedirectPage
+                  title="Alumnos"
+                  description="La gestion de alumnos esta disponible desde cada materia y desde Mis Equipos."
+                  links={[
+                    { label: 'Ir a Materias', path: '/materias' },
+                    { label: 'Ir a Mis Equipos', path: '/mis-equipos' },
+                  ]}
+                />
+              } />
+              <Route path="/comisiones" element={
+                <RedirectPage
+                  title="Comisiones"
+                  description="Las comisiones se gestionan dentro de cada materia y asignacion docente."
+                  links={[
+                    { label: 'Ir a Materias', path: '/materias' },
+                    { label: 'Ir a Asignaciones', path: '/admin/equipos/asignaciones' },
+                  ]}
+                />
+              } />
+              <Route path="/calificaciones" element={
+                <RedirectPage
+                  title="Calificaciones"
+                  description="Las calificaciones se acceden desde cada materia. Seleccione una materia para importar, ver y exportar calificaciones."
+                  links={[
+                    { label: 'Ir a Materias', path: '/materias' },
+                  ]}
+                />
+              } />
               <Route path="/encuentros" element={<EncuentrosLayout />}>
                 <Route index element={<EncuentrosListPage />} />
                 <Route path="nuevo" element={<EncuentroCreatePage />} />
@@ -137,9 +177,9 @@ function App() {
               <Route path="/avisos" element={<AvisosPage />} />
               <Route path="/admin/avisos" element={<AvisoFormPage />} />
               <Route path="/admin/avisos/:id/editar" element={<AvisoFormPage />} />
-              <Route path="/usuarios" element={<div className="text-center text-gray-500 py-12">Usuarios próximamente</div>} />
-              <Route path="/roles" element={<div className="text-center text-gray-500 py-12">Roles próximamente</div>} />
-              <Route path="/tareas-internas" element={<div className="text-center text-gray-500 py-12">Tareas Internas próximamente</div>} />
+              <Route path="/usuarios" element={<AdminUsuariosPage />} />
+              <Route path="/roles" element={<AdminRolesPage />} />
+              <Route path="/tareas-internas" element={<TareasPage />} />
               <Route path="/liquidaciones" element={<LiquidacionesPage />} />
               <Route path="/liquidaciones/historial" element={<HistorialPage />} />
               <Route path="/liquidaciones/:id" element={<LiquidacionDetailPage />} />
@@ -189,7 +229,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/perfil" element={<div className="text-center text-gray-500 py-12">Perfil próximamente</div>} />
+              <Route path="/perfil" element={<ProfilePage />} />
             </Route>
           </Routes>
         </Suspense>

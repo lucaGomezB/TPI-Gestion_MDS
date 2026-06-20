@@ -2,9 +2,7 @@ import api from '@/shared/services/api';
 import type { Docente, CreateDocenteData, UpdateDocenteData } from '../types/docentes';
 
 export async function getDocentes(): Promise<Docente[]> {
-  const response = await api.get<Docente[]>('/admin/usuarios', {
-    params: { rol: 'docente' },
-  });
+  const response = await api.get<Docente[]>('/admin/usuarios');
   return response.data;
 }
 

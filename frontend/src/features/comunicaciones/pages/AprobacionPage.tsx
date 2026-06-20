@@ -9,7 +9,7 @@ import { useComunicaciones, useAprobarComunicacion } from '../hooks/useComunicac
 
 function AprobacionPage(): ReactNode {
   const { id: materiaId } = useParams<{ id: string }>();
-  const { data: comunicaciones, isLoading, isError, refetch } = useComunicaciones(materiaId);
+  const { data: comunicaciones, isLoading, isError, refetch } = useComunicaciones(materiaId ?? '');
   const aprobarMutation = useAprobarComunicacion();
 
   const pendientes = comunicaciones?.filter((c) => c.estado === 'Pendiente' && c.requiere_aprobacion) ?? [];
@@ -19,7 +19,7 @@ function AprobacionPage(): ReactNode {
   };
 
   const handleRechazar = (id: string, motivo: string) => {
-    aprobarMutation.mutate({ id, data: { accion: 'rechazar', motivo_rechazo: motivo } });
+    aprobarMutation.mutate({ id, data: { accion: 'rechazar', motivo } });
   };
 
   if (isLoading) return <Loading skeleton />;

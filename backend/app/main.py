@@ -13,12 +13,15 @@ from fastapi import FastAPI
 
 from app.api.v1.routers import (
     academic_structure_router,
+    admin_roles_router,
+    admin_usuarios_router,
     admin_facturas_router,
     admin_auditoria_router,
     admin_moodle_router,
     admin_reportes_router,
     atrasados_ranking_router,
     auth_router,
+    mis_materias_router,
     avisos_admin_router,
     avisos_publico_router,
     calificaciones_router,
@@ -28,6 +31,7 @@ from app.api.v1.routers import (
     communication_router,
     docente_facturas_router,
     encuentros_router,
+    evaluaciones_router,
     grilla_salarial_router,
     guardias_router,
     health_router,
@@ -98,6 +102,8 @@ def create_app() -> FastAPI:
     # Mount routers
     app.include_router(health_router)
     app.include_router(auth_router)
+    app.include_router(admin_usuarios_router)
+    app.include_router(admin_roles_router)
     app.include_router(admin_facturas_router)
     app.include_router(avisos_admin_router)
     app.include_router(avisos_publico_router)
@@ -112,6 +118,7 @@ def create_app() -> FastAPI:
     app.include_router(padron_router)
     app.include_router(communication_router)
     app.include_router(encuentros_router)
+    app.include_router(evaluaciones_router)
     app.include_router(calificaciones_router)
     app.include_router(coloquios_materias_router)
     app.include_router(coloquios_router)
@@ -121,6 +128,7 @@ def create_app() -> FastAPI:
     app.include_router(liquidaciones_router)
     app.include_router(mensajeria_router)
     app.include_router(tareas_router)
+    app.include_router(mis_materias_router)
     app.include_router(atrasados_ranking_router)
     app.include_router(reportes_router)
 

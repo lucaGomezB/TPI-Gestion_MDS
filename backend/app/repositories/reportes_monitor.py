@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from app.models.calificaciones import Calificacion
+from app.models.cohorte import Cohorte
 from app.models.materia import Materia
 from app.models.padron import EntradaPadron, VersionPadron
 
@@ -75,6 +76,7 @@ class ReportesMonitorRepository:
             return []
 
         version_materia_map = {v.id: v.materia_id for v in version_list}
+        version_cohorte_map = {v.id: v.cohorte_id for v in version_list}
         version_ids = list(version_materia_map.keys())
 
         # Filter by materia_id if provided
@@ -135,12 +137,29 @@ class ReportesMonitorRepository:
         else:
             materias = {}
 
+        # Also get cohorte names
+        cohorte_ids = list(set(version_cohorte_map[v] for v in version_ids if v in version_cohorte_map))
+        if cohorte_ids:
+            coh_stmt = (
+                select(Cohorte)
+                .where(
+                    Cohorte.tenant_id == self.tenant_id,
+                    Cohorte.id.in_(cohorte_ids),
+                )
+            )
+            coh_result = await self.session.execute(coh_stmt)
+            cohortes = {c.id: c.nombre for c in list(coh_result.scalars().all())}
+        else:
+            cohortes = {}
+
         # Build result dicts
         result: list[dict] = []
         for entry in entrada_list:
             version_id = entry.version_id
             mat_id = version_materia_map.get(version_id, "")
             mat_nombre = materias.get(mat_id, "")
+            coh_id = version_cohorte_map.get(version_id, "")
+            coh_nombre = cohortes.get(coh_id, "")
 
             calificaciones = [
                 {
@@ -176,6 +195,7 @@ class ReportesMonitorRepository:
                 "regional": entry.regional,
                 "materia_nombre": mat_nombre,
                 "materia_id": mat_id,
+                "cohorte_nombre": coh_nombre,
                 "total_actividades": total_actividades,
                 "total_aprobadas": total_aprobadas,
                 "total_pendientes": total_pendientes,

@@ -49,6 +49,7 @@ async def search_audit_log(
     async with UnitOfWork(db, current_user["tenant_id"]) as uow:
         service = AuditService(uow)
         return await service.search(
+            tenant_id=current_user["tenant_id"],
             q=params.q,
             accion=params.accion,
             actor_id=params.actor_id,
@@ -81,6 +82,7 @@ async def export_audit_log(
     async with UnitOfWork(db, current_user["tenant_id"]) as uow:
         service = AuditService(uow)
         return await service.export(
+            tenant_id=current_user["tenant_id"],
             q=params.q,
             accion=params.accion,
             actor_id=params.actor_id,
@@ -110,5 +112,49 @@ async def get_docente_interacciones(
     async with UnitOfWork(db, current_user["tenant_id"]) as uow:
         service = AuditService(uow)
         return await service.get_docente_interacciones(
+            tenant_id=current_user["tenant_id"],
             docente_id=docente_id,
         )
+
+
+@router.get(
+    "/api/admin/auditoria/acciones-por-dia",
+)
+async def get_acciones_por_dia(
+    fecha_desde: str,
+    fecha_hasta: str,
+    current_user: Annotated[dict, Depends(get_current_user)],
+    _: Annotated[None, Depends(require_permission("auditoria:ver"))],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> list[dict]:
+    """Get daily action counts for the audit dashboard chart.
+
+    Returns a list of ``{fecha: str, total: int}`` for each day in the range.
+    """
+    from datetime import date
+
+    from sqlalchemy import func, select
+
+    from app.models.audit_log import AuditLog
+
+    tenant_id = current_user["tenant_id"]
+    desde = date.fromisoformat(fecha_desde)
+    hasta = date.fromisoformat(fecha_hasta)
+
+    async with db.begin():
+        result = await db.execute(
+            select(
+                func.date(AuditLog.fecha_hora).label("fecha"),
+                func.count().label("total"),
+            )
+            .where(
+                AuditLog.tenant_id == tenant_id,
+                func.date(AuditLog.fecha_hora) >= desde,
+                func.date(AuditLog.fecha_hora) <= hasta,
+            )
+            .group_by(func.date(AuditLog.fecha_hora))
+            .order_by(func.date(AuditLog.fecha_hora))
+        )
+        rows = result.all()
+
+    return [{"fecha": str(r.fecha), "total": r.total} for r in rows]

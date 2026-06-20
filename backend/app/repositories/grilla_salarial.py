@@ -10,6 +10,7 @@ from datetime import date
 from typing import Any
 
 from sqlalchemy import Select, delete, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from app.models.grilla_salarial import GrupoMateria, MateriaGrupo, SalarioBase, SalarioPlus
@@ -18,6 +19,10 @@ from app.repositories.base import BaseRepository
 
 class SalarioBaseRepository(BaseRepository[SalarioBase]):
     """CRUD for SalarioBase with overlap detection and vigente queries."""
+
+    def __init__(self, session: AsyncSession, tenant_id: str):
+        super().__init__(session, tenant_id)
+        self.model_class = SalarioBase
 
     async def get_vigente_for_rol(
         self, rol: str, target_date: date
@@ -78,6 +83,10 @@ class SalarioBaseRepository(BaseRepository[SalarioBase]):
 class SalarioPlusRepository(BaseRepository[SalarioPlus]):
     """CRUD for SalarioPlus with overlap detection and vigente queries."""
 
+    def __init__(self, session: AsyncSession, tenant_id: str):
+        super().__init__(session, tenant_id)
+        self.model_class = SalarioPlus
+
     async def get_vigentes_for_grupo(
         self, grupo: str, rol: str, target_date: date
     ) -> list[SalarioPlus]:
@@ -134,6 +143,10 @@ class SalarioPlusRepository(BaseRepository[SalarioPlus]):
 
 class GrupoMateriaRepository(BaseRepository[GrupoMateria]):
     """CRUD for GrupoMateria with materia assignment operations."""
+
+    def __init__(self, session: AsyncSession, tenant_id: str):
+        super().__init__(session, tenant_id)
+        self.model_class = GrupoMateria
 
     async def get_with_materias(self, id: str) -> GrupoMateria | None:
         """Get a GrupoMateria with its associated materias eagerly loaded."""

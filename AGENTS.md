@@ -84,6 +84,7 @@ Estas reglas son **contrato**. Romperlas es un defecto, no una decisión de esti
 5. **Pydantic schemas con `extra='forbid'`.** Todo schema rechaza campos no declarados (`model_config = ConfigDict(extra='forbid')`).
 6. **snake_case en Python.** Funciones, variables, columnas de BD, módulos y paquetes.
 7. **PascalCase en componentes React.** Nombre del componente y del archivo (`ProductCard.tsx`).
+8. **Flujo OPSX obligatorio para cada change.** Todo cambio — sin excepcion — recorre el ciclo completo: `/opsx:propose` → `/opsx:apply` → `/opsx:archive`. No se escribe codigo sin proposal, design y tasks. No se cierra un change sin archivar. Si el change es chico, los artifacts pueden ser breves, pero TIENEN que existir.
 
 ---
 

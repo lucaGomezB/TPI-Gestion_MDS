@@ -76,7 +76,7 @@ async def crear_convocatoria(
 )
 async def listar_convocatorias(
     materia_id: str,
-    _: Annotated[None, Depends(require_permission("coloquios:crear"))],
+    _: Annotated[None, Depends(require_permission("coloquios:ver"))],
     current_user: Annotated[dict, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> ColoquioListResponse:
@@ -106,6 +106,27 @@ async def importar_alumnos(
     async with UnitOfWork(db, _get_tenant_id(current_user)) as uow:
         service = ColoquioService(uow, current_user)
         return await service.importar_alumnos(materia_id, body)
+
+
+# ── GET /api/coloquios — Global listing ──────────────────────────────────────
+
+
+@router_coloquios.get(
+    "/api/coloquios",
+    status_code=HTTP_200_OK,
+    response_model=list[EvaluacionColoquioResponse],
+)
+async def list_coloquios_global(
+    current_user: Annotated[dict, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> list[EvaluacionColoquioResponse]:
+    """List all active coloquios scoped to the current tenant.
+
+    Accessible by any authenticated user with coloquios visibility.
+    """
+    async with UnitOfWork(db, _get_tenant_id(current_user)) as uow:
+        coloquios = await uow.coloquio_evaluacion.list_activas()
+        return [EvaluacionColoquioResponse.model_validate(c) for c in coloquios]
 
 
 # ── POST /api/coloquios/{evaluacion_id}/reservar — Reservar turno ────────────

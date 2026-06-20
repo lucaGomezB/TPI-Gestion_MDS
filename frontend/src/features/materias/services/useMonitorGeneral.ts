@@ -14,10 +14,10 @@ export function useMonitorGeneral(filters: MonitorGeneralFilters = {}) {
   return useQuery({
     queryKey: ['materias', 'monitor-general', filters],
     queryFn: async () => {
-      const { data } = await api.get<MonitorGeneralItem[]>(
+      const { data } = await api.get<{ items: MonitorGeneralItem[]; total: number }>(
         `/admin/materias/monitor-general${queryString ? `?${queryString}` : ''}`,
       );
-      return data;
+      return data.items || [];
     },
     staleTime: 1 * 60 * 1000,
   });

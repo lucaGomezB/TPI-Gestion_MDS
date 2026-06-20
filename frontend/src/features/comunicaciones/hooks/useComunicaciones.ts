@@ -14,10 +14,12 @@ import type {
 
 const COMUNICACIONES_KEY = ['comunicaciones'] as const;
 
-export function useComunicaciones(materiaId?: string) {
+/** materiaId is REQUIRED — backend endpoint is /materias/{id}/comunicaciones. */
+export function useComunicaciones(materiaId: string) {
   return useQuery({
     queryKey: [...COMUNICACIONES_KEY, materiaId],
     queryFn: () => getComunicaciones(materiaId),
+    enabled: !!materiaId,
   });
 }
 

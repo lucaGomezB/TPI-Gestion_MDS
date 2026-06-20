@@ -17,8 +17,10 @@ export function useNotasFinales(materiaId: string) {
   return useQuery({
     queryKey: ['materia', materiaId, 'notas-finales'],
     queryFn: async () => {
-      const { data } = await api.get<NotaFinal[]>(`/materias/${materiaId}/notas-finales`);
-      return data;
+      const { data } = await api.get<{ items: NotaFinal[]; total: number }>(
+        `/materias/${materiaId}/notas-finales`,
+      );
+      return data.items || [];
     },
     staleTime: 1 * 60 * 1000,
   });

@@ -6,7 +6,6 @@ export function useCohortes(carreraId?: string) {
   return useQuery({
     queryKey: ['cohortes', { carreraId }],
     queryFn: () => estructuraService.getCohortes(carreraId ? { carrera_id: carreraId } : undefined),
-    enabled: !!carreraId,
   });
 }
 

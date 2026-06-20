@@ -31,7 +31,7 @@ function MensajeThread({
   return (
     <div className="space-y-4">
       {mensajes.map((msg) => {
-        const isOwn = msg.emisor_id === localStorage.getItem('user_id');
+        const isOwn = msg.remitente_id === localStorage.getItem('user_id');
         return (
           <div
             key={msg.id}
@@ -45,9 +45,9 @@ function MensajeThread({
               }`}
             >
               <p className="text-xs font-medium mb-1 opacity-75">
-                {isOwn ? 'Yo' : `${msg.emisor_nombre} ${msg.emisor_apellido}`}
+                {isOwn ? 'Yo' : msg.remitente_id.substring(0, 8)}
               </p>
-              <p className="text-sm whitespace-pre-wrap">{msg.contenido}</p>
+              <p className="text-sm whitespace-pre-wrap">{msg.cuerpo}</p>
               <p className={`text-xs mt-1 ${isOwn ? 'text-blue-200' : 'text-gray-400'}`}>
                 {new Date(msg.created_at).toLocaleString('es-AR')}
               </p>

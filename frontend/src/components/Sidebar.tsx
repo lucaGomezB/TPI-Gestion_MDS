@@ -108,15 +108,15 @@ function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
   return (
     <aside
-      className={`bg-gray-900 text-white flex flex-col transition-all duration-300 ${
+      className={`bg-[#0F172A] text-white flex flex-col transition-all duration-300 ${
         isCollapsed ? 'w-16' : 'w-64'
       }`}
     >
-      <div className="flex items-center justify-between p-4 border-b border-gray-700">
-        {!isCollapsed && <span className="font-bold text-lg">Activia Trace</span>}
+      <div className="flex items-center justify-between p-4 border-b border-white/10">
+        {!isCollapsed && <span className="font-serif text-lg text-white">Activia Trace</span>}
         <button
           onClick={onToggle}
-          className="p-1 rounded hover:bg-gray-700 transition-colors"
+          className="p-1 rounded hover:bg-white/5 transition-colors"
           aria-label={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -139,7 +139,7 @@ function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           return (
             <div key={section.title} className="mb-4">
               {!isCollapsed && (
-                <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                <p className="px-4 text-xs text-[#64748B]/60 uppercase tracking-wider mb-2">
                   {section.title}
                 </p>
               )}
@@ -152,12 +152,12 @@ function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                         to={item.path}
                         className={`flex items-center px-4 py-2 text-sm transition-colors ${
                           isActive
-                            ? 'bg-gray-700 text-white border-r-2 border-blue-500'
-                            : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                            ? 'bg-white/10 text-white border-l-2 border-white'
+                            : 'text-[#64748B] hover:bg-white/5 hover:text-white'
                         }`}
                         title={isCollapsed ? item.label : undefined}
                       >
-                        <span className="flex-shrink-0">{iconMap[item.icon] || null}</span>
+                        <span className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-[#64748B]/70'}`}>{iconMap[item.icon] || null}</span>
                         {!isCollapsed && <span className="ml-3">{item.label}</span>}
                       </Link>
                     </li>
